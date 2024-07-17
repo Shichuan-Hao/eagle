@@ -81,6 +81,6 @@ msg:{"order":11011,"user_id":1011}
 
 Rocketma，Kafka（原始消息存储目录，消息读取索引目录）
 
-![RabbitMQ重复存储]([./../images/ramq-repeated-consumption.jpg](https://))
+![RabbitMQ重复存储](./../images/ramq-repeated-consumption.jpg)
 
 ## ROMQ
