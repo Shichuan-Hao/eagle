@@ -84,3 +84,5 @@ Rocketma，Kafka（原始消息存储目录，消息读取索引目录）
 ![RabbitMQ重复存储](./../images/ramq-repeated-consumption.jpg)
 
 ## ROMQ
+
+基于 Java 语言实现
