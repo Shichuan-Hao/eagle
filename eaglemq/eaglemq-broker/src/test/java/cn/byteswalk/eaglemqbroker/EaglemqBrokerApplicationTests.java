@@ -1,13 +1,13 @@
-package cn.byteswalk.eaglemq;
+package cn.byteswalk.eaglemqbroker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class EaglemqApplicationTests {
+class EaglemqBrokerApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 
 }
