@@ -28,6 +28,7 @@
 	<modules>
 		<module>eaglemq-broker</module>
 	</modules>
+
 	<scm>
 		<connection/>
 		<developerConnection/>
