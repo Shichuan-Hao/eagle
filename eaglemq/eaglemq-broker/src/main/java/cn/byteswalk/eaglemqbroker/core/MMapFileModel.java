@@ -76,6 +76,12 @@ public class MMapFileModel {
      * @param force   强制刷盘标志
      */
     public void writeContent(byte[] content, boolean force) {
+        // 定位到最新的 commitLog 文件中，记录下当前文件是否已经写满，如果写满，则创建新的文件，并且做新的 mmap 映射
+        // 如果当前文件没有写满，对content内容做一层封装(我们不可能直接把原始数据写进去，它还会有一些附属信息)，再判断写入是否会导致commitLog写满，如果不会，就选择当前 commitLog，如果写满，则创建新的文件，并且做新的 mmap 映射
+        ByteBuffer byteBuffer = mappedByteBuffer.slice();
+        byteBuffer.position(1111);
+        byteBuffer.put(content);
+
         // 默认刷到 page cache 中
         // 如果需要强制刷盘，这里要兼容
         mappedByteBuffer.put(content);

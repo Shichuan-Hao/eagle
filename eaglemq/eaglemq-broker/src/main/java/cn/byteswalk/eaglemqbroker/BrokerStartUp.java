@@ -4,7 +4,7 @@ import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.config.GlobalPropertiesLoader;
 import cn.byteswalk.eaglemqbroker.config.TopicLoader;
 import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
-import cn.byteswalk.eaglemqbroker.core.MessageAppendHandler;
+import cn.byteswalk.eaglemqbroker.core.CommitLogAppendHandler;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class BrokerStartUp {
 
     private static GlobalPropertiesLoader globalPropertiesLoader;
     private static TopicLoader topicLoader;
-    private static MessageAppendHandler messageAppendHandler;
+    private static CommitLogAppendHandler commitLogAppendHandler;
 
     /**
      * 初始化配置
@@ -24,7 +24,7 @@ public class BrokerStartUp {
         globalPropertiesLoader.loadProperties();
         topicLoader = new TopicLoader();
         topicLoader.loadProperties();
-        messageAppendHandler = new MessageAppendHandler();
+        commitLogAppendHandler = new CommitLogAppendHandler();
 
         List<TopicModel> topicModelList = CommonCache.getTopicInfo();
         for (TopicModel topicModel : topicModelList) {
@@ -33,7 +33,7 @@ public class BrokerStartUp {
                     + BrokerConstants.BASE_STORE_PATH
                     + topicName
                     + "/0000001";
-            messageAppendHandler.prepareMMapLoading(filePath, topicName);
+            commitLogAppendHandler.prepareMMapLoading(filePath, topicName);
         }
 
     }
@@ -45,7 +45,7 @@ public class BrokerStartUp {
         initProperties();
         // 模拟初始话文件映射
         String topic = "order_cancel_topic";
-        messageAppendHandler.appendMsg(topic, "this is a test contest");
-        System.out.println(messageAppendHandler.readMes(topic));
+        commitLogAppendHandler.appendMsg(topic, "this is a test contest");
+        System.out.println(commitLogAppendHandler.readMes(topic));
     }
 }

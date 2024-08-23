@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-public class MessageAppendHandler {
+public class CommitLogAppendHandler {
 
     private final MMapFileModelManager mMapFileModelManager = new MMapFileModelManager();
 
@@ -21,6 +21,7 @@ public class MessageAppendHandler {
 
     public String readMes(String topic) {
         MMapFileModel mMapFileModel = mMapFileModelManager.get(topic);
+
         checkMMapFileModelIsNull(mMapFileModel);
 
         byte[] readContent = mMapFileModel.readContent(0, 10);
@@ -29,6 +30,7 @@ public class MessageAppendHandler {
 
     public void appendMsg(String topic, String content) {
         MMapFileModel mMapFileModel = mMapFileModelManager.get(topic);
+
         checkMMapFileModelIsNull(mMapFileModel);
 
         mMapFileModel.writeContent(content.getBytes(StandardCharsets.UTF_8));
