@@ -1,6 +1,5 @@
 package cn.byteswalk.eaglemqbroker.utils;
 
-import cn.byteswalk.eaglemqbroker.model.QueueModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import com.alibaba.fastjson2.JSON;
 
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public class FileContentReaderUtils {
 
-    private static String readFromFile(String path){
+    public static String readFromFile(String path){
         // FileInputStream 字节流
         // FileReader 字符流
         try(BufferedReader in = new BufferedReader(new FileReader(path))) {

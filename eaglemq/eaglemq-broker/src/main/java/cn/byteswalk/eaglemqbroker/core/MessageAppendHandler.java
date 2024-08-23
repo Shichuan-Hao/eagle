@@ -9,19 +9,14 @@ public class MessageAppendHandler {
 
     private final MMapFileModelManager mMapFileModelManager = new MMapFileModelManager();
 
-    private static final String FILE_PATH = "E:\\bytewalk\\jproject\\eagle\\eaglemq\\broker\\store\\pay_topic\\00000000";
-    private static final String TOPIC_NAME = "pay_topic";
+//    private static final String FILE_PATH = "E:\\bytewalk\\jproject\\eagle\\eaglemq\\broker\\store\\pay_topic\\00000000";
+//    private static final String TOPIC_NAME = "pay_topic";
 
-    public MessageAppendHandler()
-            throws IOException {
-        this.prepareMMapLoading();
-    }
-
-    public void prepareMMapLoading()
+    public void prepareMMapLoading(String filePath, String topicName)
             throws IOException {
         MMapFileModel mMapFileModel = new MMapFileModel();
-        mMapFileModel.loadFileInMMap(FILE_PATH, 0, 1024 * 1024);
-        mMapFileModelManager.put(TOPIC_NAME, mMapFileModel);
+        mMapFileModel.loadFileInMMap(filePath, 0, 1024 * 1024);
+        mMapFileModelManager.put(topicName, mMapFileModel);
     }
 
     public String readMes(String topic) {
@@ -45,11 +40,4 @@ public class MessageAppendHandler {
         }
     }
 
-
-    public static void main(String[] args)
-            throws IOException {
-        MessageAppendHandler messageAppendHandler = new MessageAppendHandler();
-        messageAppendHandler.appendMsg(TOPIC_NAME, "哈this is test\n这是测试内容");
-        System.out.println(messageAppendHandler.readMes(TOPIC_NAME));
-    }
 }

@@ -23,7 +23,7 @@ public class TopicModel {
         return queueList;
     }
 
-    public void setQueueModelList(List<QueueModel> queueList) {
+    public void setQueueList(List<QueueModel> queueList) {
         this.queueList = queueList;
     }
 

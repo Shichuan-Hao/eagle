@@ -1,7 +1,10 @@
 package cn.byteswalk.eaglemqbroker.cache;
 
 import cn.byteswalk.eaglemqbroker.config.GlobalProperties;
-import cn.byteswalk.eaglemqbroker.config.TopicInfo;
+import cn.byteswalk.eaglemqbroker.model.TopicModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 统一缓存对象
@@ -9,7 +12,7 @@ import cn.byteswalk.eaglemqbroker.config.TopicInfo;
 public class CommonCache {
 
     private static GlobalProperties globalProperties = new GlobalProperties();
-    private static TopicInfo topicInfo = new TopicInfo();
+    private static List<TopicModel> topicModelList = new ArrayList<>();
 
 
     public static GlobalProperties getGlobalProperties() {
@@ -20,11 +23,11 @@ public class CommonCache {
         CommonCache.globalProperties = globalProperties;
     }
 
-    public static TopicInfo getTopicInfo() {
-        return topicInfo;
+    public static List<TopicModel> getTopicInfo() {
+        return topicModelList;
     }
 
-    public static void setTopicInfo(TopicInfo topicInfo) {
-        CommonCache.topicInfo = topicInfo;
+    public static void setTopicInfo(List<TopicModel> topicInfo) {
+        CommonCache.topicModelList = topicInfo;
     }
 }
