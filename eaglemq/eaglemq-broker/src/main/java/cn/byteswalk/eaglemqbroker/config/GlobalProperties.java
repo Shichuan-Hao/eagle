@@ -1,5 +1,8 @@
 package cn.byteswalk.eaglemqbroker.config;
 
+/**
+ * 全局属性
+ */
 public class GlobalProperties {
 
     /**

@@ -4,15 +4,25 @@ import cn.byteswalk.eaglemqbroker.config.GlobalProperties;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 统一缓存对象
  */
 public class CommonCache {
 
+    /**
+     * 全局属性
+     */
     private static GlobalProperties globalProperties = new GlobalProperties();
-    private static List<TopicModel> topicModelList = new ArrayList<>();
+
+    /**
+     * 主题模型映射
+     * Key:topicName:主题名称 Value:主题模型
+     */
+    private static Map<String, TopicModel> topicModelMap = new HashMap<>();
 
 
     public static GlobalProperties getGlobalProperties() {
@@ -23,11 +33,11 @@ public class CommonCache {
         CommonCache.globalProperties = globalProperties;
     }
 
-    public static List<TopicModel> getTopicInfo() {
-        return topicModelList;
+    public static Map<String, TopicModel> getTopicModelMap() {
+        return topicModelMap;
     }
 
-    public static void setTopicInfo(List<TopicModel> topicInfo) {
-        CommonCache.topicModelList = topicInfo;
+    public static void setTopicModelMap(Map<String, TopicModel> topicModelMap) {
+        CommonCache.topicModelMap = topicModelMap;
     }
 }

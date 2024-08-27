@@ -34,10 +34,16 @@ public class MMapUtil {
 
     private static final String RW_ACCESS_MODE = "rw";
 
+
     private File file;
     // MappedByteBuffer 是 DirectByteBuffer，即直接内存
     // DirectByteBuffer 特点之一是不受限制于 JVM 的 GC 回收的管理，意味着将这个对象设置为 null
     // gc管理呢？否定的
+    /**
+     * MappedByteBuffer 是一个 DirectByteBuffer 直接内存块，它的特点是不受限于 JVM 的 GC 垃圾回收的管理，这也就意味这
+     * 当将这个对象设置为 null 时不代表该对象会自动被GC识别回收最后释放掉其所占用的内存块，它所关联的内存块时比较特别的，属于 native memory，
+     * 因此，对 MappedByteBuffer 的内存释放是必须要考虑的
+     */
     private MappedByteBuffer mappedByteBuffer;
     private FileChannel fileChannel;
 
@@ -109,6 +115,13 @@ public class MMapUtil {
         if (mappedByteBuffer == null || !mappedByteBuffer.isDirect() || mappedByteBuffer.capacity() == 0) {
             return;
         }
+        if (fileChannel != null) {
+            try {
+                fileChannel.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         invoke(invoke(viewed(mappedByteBuffer), "cleaner"), "clean");
     }
 
@@ -150,23 +163,5 @@ public class MMapUtil {
         } else {
             return viewed(viewedBuffer);
         }
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-//        MMapUtil mMapUtil = new MMapUtil();
-        // 映射 1mb
-//        mMapUtil.loadFileInMMap("E:\\bytewalk\\jproject\\eagle\\eaglemq\\broker\\store\\order_cancel_topic\\00000000", 0, 1024*1024*1);
-        Scanner input = new Scanner(System.in);
-        int i = 0;
-        int size = input.nextInt();
-        MMapUtil mMapUtil = new MMapUtil();
-        String file = "E:\\bytewalk\\jproject\\eagle\\eaglemq\\broker\\store\\order_cancel_topic\\00000000";
-        //默认是字节
-        mMapUtil.loadFileInMMap(file, 0, 1024 * 1024 * size);
-        System.out.println("映射了" + size + " m 的空间");
-        TimeUnit.SECONDS.sleep(5);;
-        mMapUtil.clean();
-        System.out.println("释放内存");
-        TimeUnit.SECONDS.sleep(10000);
     }
 }

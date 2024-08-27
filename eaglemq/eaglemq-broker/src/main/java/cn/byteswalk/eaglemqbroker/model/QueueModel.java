@@ -1,5 +1,8 @@
 package cn.byteswalk.eaglemqbroker.model;
 
+/**
+ * 主题分区对象
+ */
 public class QueueModel {
 
     private Integer id;

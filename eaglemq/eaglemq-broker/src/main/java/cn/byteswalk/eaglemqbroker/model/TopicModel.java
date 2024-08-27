@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class TopicModel {
     private String topic;
+    private CommitLogModel commitLogModel;
     private List<QueueModel> queueList;
     private Long createTime;
     private Long updateTime;
@@ -17,6 +18,14 @@ public class TopicModel {
 
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public CommitLogModel getCommitLogModel() {
+        return commitLogModel;
+    }
+
+    public void setCommitLogModel(CommitLogModel commitLogModel) {
+        this.commitLogModel = commitLogModel;
     }
 
     public List<QueueModel> getQueueList() {
@@ -47,6 +56,7 @@ public class TopicModel {
     public String toString() {
         return "TopicModel{" +
                 "topic='" + topic + '\'' +
+                ", commitLogModel=" + commitLogModel +
                 ", queueList=" + queueList +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
