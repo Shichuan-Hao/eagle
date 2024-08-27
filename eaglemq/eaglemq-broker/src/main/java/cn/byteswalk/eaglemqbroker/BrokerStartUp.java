@@ -24,6 +24,7 @@ public class BrokerStartUp {
         globalPropertiesLoader.loadProperties();
         topicLoader = new TopicLoader();
         topicLoader.loadProperties();
+        topicLoader.startRefreshTopicInfoTask();
         commitLogAppendHandler = new CommitLogAppendHandler();
 
         for (TopicModel topicModel : CommonCache.getTopicModelMap().values()) {

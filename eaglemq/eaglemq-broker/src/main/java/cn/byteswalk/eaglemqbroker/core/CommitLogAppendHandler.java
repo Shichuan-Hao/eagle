@@ -1,10 +1,10 @@
 package cn.byteswalk.eaglemqbroker.core;
 
 
+import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
 import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -25,7 +25,7 @@ public class CommitLogAppendHandler {
     public void prepareMMapLoading(String topicName)
             throws IOException {
         MMapFileModel mMapFileModel = new MMapFileModel();
-        mMapFileModel.loadFileInMMap(topicName, 0, 1024 * 1024);
+        mMapFileModel.loadFileInMMap(topicName, 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
         mMapFileModelManager.put(topicName, mMapFileModel);
     }
 
@@ -49,7 +49,8 @@ public class CommitLogAppendHandler {
      * @param topicName 主题名称
      * @param content 追加写的内容
      */
-    public void appendMsg(String topicName, byte[] content) {
+    public void appendMsg(String topicName, byte[] content)
+            throws IOException {
         MMapFileModel mMapFileModel = mMapFileModelManager.get(topicName);
 
         checkMMapFileModelIsNull(mMapFileModel);

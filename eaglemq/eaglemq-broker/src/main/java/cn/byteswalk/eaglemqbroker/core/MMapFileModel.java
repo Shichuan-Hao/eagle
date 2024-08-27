@@ -5,7 +5,6 @@ import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
 import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 import cn.byteswalk.eaglemqbroker.model.CommitLogModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
-import cn.byteswalk.eaglemqbroker.utils.ByteConvertUtils;
 import cn.byteswalk.eaglemqbroker.utils.CommitLogFileNameUtil;
 
 import java.io.File;
@@ -31,9 +30,10 @@ public class MMapFileModel {
 
     private static final String RW_ACCESS_MODE = "rw";
 
+    private File file;
     private MappedByteBuffer mappedByteBuffer;
     private FileChannel fileChannel;
-    private String topic;
+    private String topicName;
 
     /**
      * 指定offset做文件映射
@@ -45,11 +45,94 @@ public class MMapFileModel {
     public void loadFileInMMap(String topicName, int startOffset, int mappedSize)
             throws IOException {
         // 获取最新的 commitLog 文件
+        this.topicName = topicName;
         String filePath = getLatestCommitLogFile(topicName);
-        File file = new File(filePath);
+        this.doMMap(filePath, startOffset, mappedSize);
+    }
+
+    /**
+     * 支持从文件从指定的 offset 开始读取内容
+     *
+     * @param readOffset 读取内容的起始位置
+     * @param size       读取内容的大小
+     * @return 返回读取内容
+     */
+    public byte[] readContent(int readOffset, int size) {
+        mappedByteBuffer.position(readOffset);
+        byte[] content = new byte[size];
+        int j = 0;
+        for (int i = 0; i < size; i++) {
+            // 从内存里访问，快速高效，不用担心
+            byte b = mappedByteBuffer.get(readOffset + i);
+            content[j++] = b;
+        }
+        return content;
+    }
+
+    /**
+     * 更高性能的一种写入api
+     *
+     * @param commitLogMessageModel 内容
+     */
+    public void writeContent(CommitLogMessageModel commitLogMessageModel)
+            throws IOException {
+        this.writeContent(commitLogMessageModel, false);
+    }
+
+    /**
+     * 写入数据到磁盘中
+     *
+     * @param commitLogMessageModel 内容
+     * @param force   强制刷盘标志
+     */
+    public void writeContent(CommitLogMessageModel commitLogMessageModel, boolean force)
+            throws IOException {
+        //定位到最新的commitLog文件中，记录下当前文件是否已经写满，如果写满，则创建新的文件，并且做新的mmap映射 done!
+        //如果当前文件没有写满，对content内容做一层封装，done!
+        // 再判断写入是否会导致commitLog写满，如果不会，则选择当前commitLog，如果会则创建新文件，并且做mmap映射 done!
+        //定位到最新的commitLog文件之后，写入 done!
+        //定义一个对象专门管理各个topic的最新写入offset值，并且定时刷新到磁盘中（mmap？）
+        //写入数据，offset变更，如果是高并发场景，offset是不是会被多个线程访问？
+
+        //offset会用一个原子类AtomicLong去管理
+        //线程安全问题：线程1：111，线程2：122
+        //加锁机制 （锁的选择非常重要）
+        this.checkCommitLogHasEnableSpace(commitLogMessageModel);
+
+
+        // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
+        mappedByteBuffer.put(commitLogMessageModel.convertToBytes());
+        if (force) {
+            // 强制刷盘
+            mappedByteBuffer.force();
+        }
+    }
+
+    /**
+     * 释放mmap内存
+     */
+    public void clean() {
+        if (mappedByteBuffer != null && mappedByteBuffer.isDirect() && mappedByteBuffer.capacity() != 0) {
+            // 执行需要的操作
+            invoke(invoke(viewed(mappedByteBuffer), "cleaner"), "clean");
+        }
+        // Ensure closing file channel
+        if (fileChannel != null && fileChannel.isOpen()) {
+            try {
+                fileChannel.close();
+            } catch (IOException e) {
+                // Handle exception
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void doMMap(String filePath, int startOffset, int mappedSize) throws IOException {
+        file = new File(filePath);
         if (!file.exists() || !file.canWrite()) {
             throw new IOException("File path is invalid or not writable: " + filePath);
         }
+
         this.fileChannel = new RandomAccessFile(file, RW_ACCESS_MODE).getChannel();
         this.mappedByteBuffer = this.fileChannel.map(FileChannel.MapMode.READ_WRITE, startOffset, mappedSize);
     }
@@ -65,6 +148,7 @@ public class MMapFileModel {
             throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
         }
         CommitLogModel commitLogModel = topicModel.getCommitLogModel();
+        // 剩余可写入的空间值
         long diff = commitLogModel.getOffsetLimit() - commitLogModel.getOffset();
         String filePath = null;
         if (diff == 0) {
@@ -99,80 +183,25 @@ public class MMapFileModel {
         return newFilePath;
     }
 
-    /**
-     * 支持从文件从指定的 offset 开始读取内容
-     *
-     * @param readOffset 读取内容的起始位置
-     * @param size       读取内容的大小
-     * @return 返回读取内容
-     */
-    public byte[] readContent(int readOffset, int size) {
-        mappedByteBuffer.position(readOffset);
-        byte[] content = new byte[size];
-        int j = 0;
-        for (int i = 0; i < size; i++) {
-            // 从内存里访问，快速高效，不用担心
-            byte b = mappedByteBuffer.get(readOffset + i);
-            content[j++] = b;
+    private void checkCommitLogHasEnableSpace(CommitLogMessageModel commitLogMessageModel)
+            throws IOException {
+        TopicModel topicModel = CommonCache.getTopicModelMap().get(this.topicName);
+        if (Objects.isNull(topicModel)) {
+            throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
         }
-        return content;
-    }
-
-    /**
-     * 更高性能的一种写入api
-     *
-     * @param commitLogMessageModel 内容
-     */
-    public void writeContent(CommitLogMessageModel commitLogMessageModel) {
-        this.writeContent(commitLogMessageModel, false);
-    }
-
-    /**
-     * 写入数据到磁盘中
-     *
-     * @param commitLogMessageModel 内容
-     * @param force   强制刷盘标志
-     */
-    public void writeContent(CommitLogMessageModel commitLogMessageModel, boolean force) {
-        //定位到最新的commitLog文件中，记录下当前文件是否已经写满，如果写满，则创建新的文件，并且做新的mmap映射 done!
-        //如果当前文件没有写满，对content内容做一层封装，done!
-        // 再判断写入是否会导致commitLog写满，如果不会，则选择当前commitLog，如果会则创建新文件，并且做mmap映射
-        //定位到最新的commitLog文件之后，写入
-        //定义一个对象专门管理各个topic的最新写入offset值，并且定时刷新到磁盘中（mmap？）
-        //写入数据，offset变更，如果是高并发场景，offset是不是会被多个线程访问？
-
-        //offset会用一个原子类AtomicLong去管理
-        //线程安全问题：线程1：111，线程2：122
-        //加锁机制 （锁的选择非常重要）
-
-
-        // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
-
-        mappedByteBuffer.put(commitLogMessageModel.convertToBytes());
-        if (force) {
-            // 强制刷盘
-            mappedByteBuffer.force();
+        CommitLogModel commitLogModel = topicModel.getCommitLogModel();
+        // 剩余可写入的空间大小
+        long writeAbleOffsetNum = commitLogModel.getOffsetLimit() - commitLogModel.getOffset();
+        // 空间不足，需要创建新的commitLog文件并且做映射
+        if (writeAbleOffsetNum < commitLogMessageModel.getSize()) {
+            // 00000000 文件 -> 00000001 文件
+            // 空间利用率不是100%，比如某个commitLog剩余150byte【碎片空间】大小的空间，最新的消息体积是151byte【可以通过程序过滤掉】
+            String newCommitLogFilePath = this.createNewCommitLogFile(this.topicName, commitLogModel);
+            // 新文件路径映射进来
+            this.doMMap(newCommitLogFilePath, 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
         }
     }
 
-    /**
-     * 释放mmap内存
-     */
-    public void clean() {
-        if (mappedByteBuffer != null && mappedByteBuffer.isDirect() && mappedByteBuffer.capacity() != 0) {
-            // 执行需要的操作
-            invoke(invoke(viewed(mappedByteBuffer), "cleaner"), "clean");
-        }
-        // Ensure closing file channel
-        if (fileChannel != null && fileChannel.isOpen()) {
-            try {
-                fileChannel.close();
-            } catch (IOException e) {
-                // Handle exception
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
     // AccessController.doPrivileged 在 jdk17 已经过时
     private Object invoke(final Object target, final String methodName, final Class<?>... args) {
