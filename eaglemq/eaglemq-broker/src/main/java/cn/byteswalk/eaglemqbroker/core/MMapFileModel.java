@@ -2,8 +2,10 @@ package cn.byteswalk.eaglemqbroker.core;
 
 import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
+import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 import cn.byteswalk.eaglemqbroker.model.CommitLogModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
+import cn.byteswalk.eaglemqbroker.utils.ByteConvertUtils;
 import cn.byteswalk.eaglemqbroker.utils.CommitLogFileNameUtil;
 
 import java.io.File;
@@ -19,6 +21,7 @@ import java.nio.channels.FileChannel;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Objects;
 
 
 /**
@@ -58,22 +61,20 @@ public class MMapFileModel {
      */
     private String getLatestCommitLogFile(String topicName) {
         TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
-        if (topicModel == null) {
+        if (Objects.isNull(topicModel)) {
             throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
         }
-
         CommitLogModel commitLogModel = topicModel.getCommitLogModel();
         long diff = commitLogModel.getOffsetLimit() - commitLogModel.getOffset();
-        String latestCommitLogFileName = null;
+        String filePath = null;
         if (diff == 0) {
             // 已经写满了
-            latestCommitLogFileName = this.createNewCommitLogFile(topicName, commitLogModel);
+            filePath = this.createNewCommitLogFile(topicName, commitLogModel);
         }  else if (diff > 0) {
             // 还有机会写入
-            latestCommitLogFileName = commitLogModel.getFileName();
+            filePath = this.filePath(topicName, commitLogModel.getFileName());;
         }
-
-        return latestCommitLogFileName;
+        return filePath;
     }
 
     /**
@@ -85,10 +86,7 @@ public class MMapFileModel {
     private String createNewCommitLogFile(String topicName, CommitLogModel commitLogModel) {
         // commitLog 命名规范
         String newFileName = CommitLogFileNameUtil.incrCommitLogFileName(commitLogModel.getFileName());
-        String newFilePath = CommonCache.getGlobalProperties().getEagleMqHome()
-                + BrokerConstants.BASE_STORE_PATH
-                + topicName
-                + newFileName;
+        String newFilePath = this.filePath(topicName, newFileName);
         File newCommmitLogFile = new File(newFilePath);
         try {
             // 新的 commitLog文件创建
@@ -123,22 +121,34 @@ public class MMapFileModel {
     /**
      * 更高性能的一种写入api
      *
-     * @param content 内容
+     * @param commitLogMessageModel 内容
      */
-    public void writeContent(byte[] content) {
-        this.writeContent(content, false);
+    public void writeContent(CommitLogMessageModel commitLogMessageModel) {
+        this.writeContent(commitLogMessageModel, false);
     }
 
     /**
      * 写入数据到磁盘中
      *
-     * @param content 内容
+     * @param commitLogMessageModel 内容
      * @param force   强制刷盘标志
      */
-    public void writeContent(byte[] content, boolean force) {
-        // 默认刷到 page cache 中
-        // 如果需要强制刷盘，这里要兼容
-        mappedByteBuffer.put(content);
+    public void writeContent(CommitLogMessageModel commitLogMessageModel, boolean force) {
+        //定位到最新的commitLog文件中，记录下当前文件是否已经写满，如果写满，则创建新的文件，并且做新的mmap映射 done!
+        //如果当前文件没有写满，对content内容做一层封装，done!
+        // 再判断写入是否会导致commitLog写满，如果不会，则选择当前commitLog，如果会则创建新文件，并且做mmap映射
+        //定位到最新的commitLog文件之后，写入
+        //定义一个对象专门管理各个topic的最新写入offset值，并且定时刷新到磁盘中（mmap？）
+        //写入数据，offset变更，如果是高并发场景，offset是不是会被多个线程访问？
+
+        //offset会用一个原子类AtomicLong去管理
+        //线程安全问题：线程1：111，线程2：122
+        //加锁机制 （锁的选择非常重要）
+
+
+        // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
+
+        mappedByteBuffer.put(commitLogMessageModel.convertToBytes());
         if (force) {
             // 强制刷盘
             mappedByteBuffer.force();
@@ -203,4 +213,13 @@ public class MMapFileModel {
             return viewed(viewedBuffer);
         }
     }
+
+    private String filePath(String topicName, String fileName) {
+        return CommonCache.getGlobalProperties().getEagleMqHome()
+                + BrokerConstants.BASE_STORE_PATH
+                + topicName
+                + fileName;
+    }
+
+
 }

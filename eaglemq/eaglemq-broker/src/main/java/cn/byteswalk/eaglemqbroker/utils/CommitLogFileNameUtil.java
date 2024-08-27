@@ -1,17 +1,25 @@
 package cn.byteswalk.eaglemqbroker.utils;
 
+import cn.byteswalk.eaglemqbroker.cache.CommonCache;
+import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
+
 /**
  *
  */
 public class CommitLogFileNameUtil {
 
 
+    private static final int FULL_FILE_NAME_LENGTH = 8;
+    private static final int ZERO = 0;
+    private static final String ZERO_STR = "0";
+    private static final String FIRST_FILE_NAME = "00000000";
+
     /**
      * 创建第一个commitLog文件名
      * @return 返回第一commitLog文件名
      */
     public static String createFirstFileName() {
-        return "00000000";
+        return FIRST_FILE_NAME;
     }
 
     /**
@@ -20,20 +28,20 @@ public class CommitLogFileNameUtil {
      * @return 返回新的文件名
      */
     public static String increaseCommitLogFileName(String oldFileName) {
-        if (oldFileName.length() != 8) {
+        if (oldFileName.length() != FULL_FILE_NAME_LENGTH) {
             throw new IllegalArgumentException("fileName must has 8 chars");
         }
         Long fileIndex = Long.valueOf(oldFileName);
         fileIndex++;
-        String newFileName = String.valueOf(fileIndex);
+        String newFileName = java.lang.String.valueOf(fileIndex);
         int newFileNameLength = newFileName.length();
-        int needFullLength = 8 - newFileNameLength;
-        if (needFullLength < 0) {
+        int needFullLength = FULL_FILE_NAME_LENGTH - newFileNameLength;
+        if (needFullLength < ZERO) {
             throw new RuntimeException("unknown filename error");
         }
         StringBuilder stringBuffer = new StringBuilder();
-        for (int i = 0; i < needFullLength; i++) {
-            stringBuffer.append("0");
+        for (int i = ZERO; i < needFullLength; i++) {
+            stringBuffer.append(ZERO_STR);
         }
         stringBuffer.append(newFileName);
         return stringBuffer.toString();
@@ -53,7 +61,7 @@ public class CommitLogFileNameUtil {
             Long fileIndex = Long.valueOf(oldFileName);
             fileIndex++;
             // 使用格式化字符串，保证长度为8位，不足的前面补0
-            return String.format("%08d", fileIndex);
+            return java.lang.String.format("%08d", fileIndex);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("fileName must be a numeric string.");
         } catch (Exception e) {

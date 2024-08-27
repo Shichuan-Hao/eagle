@@ -1,20 +1,25 @@
 package cn.byteswalk.eaglemqbroker.core;
 
 
+import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * CommitLog 文件追加写处理类
+ * CommitLog 文件追加写数据处理类
  */
 public class CommitLogAppendHandler {
 
+    /**
+     * MMapFileModelManager
+     */
     private final MMapFileModelManager mMapFileModelManager = new MMapFileModelManager();
 
     /**
      *
-     * @param topicName the name of topic
+     * @param topicName 消息主题名称
      * @throws IOException the exception to io
      */
     public void prepareMMapLoading(String topicName)
@@ -31,8 +36,11 @@ public class CommitLogAppendHandler {
      */
     public String readMes(String topicName) {
         MMapFileModel mMapFileModel = mMapFileModelManager.get(topicName);
+
         checkMMapFileModelIsNull(mMapFileModel);
+
         byte[] readContent = mMapFileModel.readContent(0, 10);
+
         return new String(readContent);
     }
 
@@ -41,10 +49,15 @@ public class CommitLogAppendHandler {
      * @param topicName 主题名称
      * @param content 追加写的内容
      */
-    public void appendMsg(String topicName, String content) {
+    public void appendMsg(String topicName, byte[] content) {
         MMapFileModel mMapFileModel = mMapFileModelManager.get(topicName);
+
         checkMMapFileModelIsNull(mMapFileModel);
-        mMapFileModel.writeContent(content.getBytes(StandardCharsets.UTF_8));
+
+        CommitLogMessageModel commitLogMessageModel = new CommitLogMessageModel();
+        commitLogMessageModel.setSize(content.length);
+        commitLogMessageModel.setContent(content);
+        mMapFileModel.writeContent(commitLogMessageModel);
     }
 
     /**

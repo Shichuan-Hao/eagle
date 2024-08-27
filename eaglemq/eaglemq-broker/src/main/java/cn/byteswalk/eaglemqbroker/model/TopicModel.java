@@ -6,18 +6,18 @@ import java.util.List;
  * mq的topic映射对象
  */
 public class TopicModel {
-    private String topic;
+    private String topicName;
     private CommitLogModel commitLogModel;
-    private List<QueueModel> queueList;
+    private List<QueueModel> queueModels;
     private Long createTime;
     private Long updateTime;
 
-    public String getTopic() {
-        return topic;
+    public String getTopicName() {
+        return topicName;
     }
 
-    public void setTopic(String topic) {
-        this.topic = topic;
+    public void setTopicName(String topicName) {
+        this.topicName = topicName;
     }
 
     public CommitLogModel getCommitLogModel() {
@@ -28,12 +28,12 @@ public class TopicModel {
         this.commitLogModel = commitLogModel;
     }
 
-    public List<QueueModel> getQueueList() {
-        return queueList;
+    public List<QueueModel> getQueueModels() {
+        return queueModels;
     }
 
-    public void setQueueList(List<QueueModel> queueList) {
-        this.queueList = queueList;
+    public void setQueueModels(List<QueueModel> queueModels) {
+        this.queueModels = queueModels;
     }
 
     public Long getCreateTime() {
@@ -55,9 +55,9 @@ public class TopicModel {
     @Override
     public String toString() {
         return "TopicModel{" +
-                "topic='" + topic + '\'' +
+                "topic='" + topicName + '\'' +
                 ", commitLogModel=" + commitLogModel +
-                ", queueList=" + queueList +
+                ", queueList=" + queueModels +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 '}';

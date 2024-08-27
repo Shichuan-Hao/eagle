@@ -1,6 +1,6 @@
 [
   {
-    "topic": "order_cancel_topic",
+    "topicName": "order_cancel_topic",
     "latestCommitLog": {
       "fileName": "00000000",
       "offset": 175687

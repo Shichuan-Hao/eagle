@@ -16,6 +16,10 @@ public class CommitLogModel {
 
     /**
      * commitLog 文件写入的最大上限体积
+     *
+     * 与 offset 比较，如果 offset 比 offsetList 小，则说明可能还可以写入 CommitLog 文件
+     * diff = offsetLimit - offset
+     *
      */
     private Long offsetLimit;
 

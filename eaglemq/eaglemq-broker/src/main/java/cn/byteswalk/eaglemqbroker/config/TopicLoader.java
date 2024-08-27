@@ -24,7 +24,7 @@ public class TopicLoader {
         String fileContent = FileContentReaderUtil.readFromFile(topicJsonFilePath);
         List<TopicModel> topicModelList = JSON.parseArray(fileContent, TopicModel.class);
         Map<String, TopicModel> topicModelMap = topicModelList.stream()
-                .collect(Collectors.toMap(TopicModel::getTopic, item -> item));
+                .collect(Collectors.toMap(TopicModel::getTopicName, item -> item));
         CommonCache.setTopicModelMap(topicModelMap);
     }
 }

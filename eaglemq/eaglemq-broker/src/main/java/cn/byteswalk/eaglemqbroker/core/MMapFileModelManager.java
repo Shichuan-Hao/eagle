@@ -13,7 +13,7 @@ public class MMapFileModelManager {
      */
     private final Map<String, MMapFileModel> mMapFileModelMap = new HashMap<>();
 
-    public void put(String topic, MMapFileModel mMapFileModel) {
+    public void  put(String topic, MMapFileModel mMapFileModel) {
         mMapFileModelMap.put(topic, mMapFileModel);
     }
 

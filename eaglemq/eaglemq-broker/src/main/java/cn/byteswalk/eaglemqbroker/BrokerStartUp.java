@@ -7,6 +7,7 @@ import cn.byteswalk.eaglemqbroker.core.CommitLogAppendHandler;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class BrokerStartUp {
 
@@ -26,7 +27,8 @@ public class BrokerStartUp {
         commitLogAppendHandler = new CommitLogAppendHandler();
 
         for (TopicModel topicModel : CommonCache.getTopicModelMap().values()) {
-            String topicName = topicModel.getTopic();
+            String topicName = topicModel.getTopicName();
+            // 预加载（映射）
             commitLogAppendHandler.prepareMMapLoading(topicName);
         }
 
@@ -39,7 +41,7 @@ public class BrokerStartUp {
         initProperties();
         // 模拟初始话文件映射
         String topic = "order_cancel_topic";
-        commitLogAppendHandler.appendMsg(topic, "this is a test contest");
+        commitLogAppendHandler.appendMsg(topic, "this is a test contest".getBytes(StandardCharsets.UTF_8));
         System.out.println(commitLogAppendHandler.readMes(topic));
     }
 }
