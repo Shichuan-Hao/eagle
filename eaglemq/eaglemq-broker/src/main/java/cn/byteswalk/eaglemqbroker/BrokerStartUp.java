@@ -7,7 +7,7 @@ import cn.byteswalk.eaglemqbroker.core.CommitLogAppendHandler;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 public class BrokerStartUp {
 
@@ -20,11 +20,17 @@ public class BrokerStartUp {
      */
     private static void initProperties()
             throws IOException {
+
         globalPropertiesLoader = new GlobalPropertiesLoader();
         globalPropertiesLoader.loadProperties();
+
+        // 创建 topic 属性加载器
         topicLoader = new TopicLoader();
+        // 加载 topic 的属性
         topicLoader.loadProperties();
+        // 刷新 topic 的信息
         topicLoader.startRefreshTopicInfoTask();
+
         commitLogAppendHandler = new CommitLogAppendHandler();
 
         for (TopicModel topicModel : CommonCache.getTopicModelMap().values()) {
@@ -36,13 +42,17 @@ public class BrokerStartUp {
     }
 
 
-    public static void main(String[] args) throws IOException {
-        // 模拟启动流程
-        // 第一步：加载配置，换成对象生产
+    public static void main(String[] args)
+            throws IOException, InterruptedException {
+        //加载配置 ，缓存对象的生成
         initProperties();
-        // 模拟初始话文件映射
+        //模拟初始化文件映射
         String topic = "order_cancel_topic";
-        commitLogAppendHandler.appendMsg(topic, "this is a test contest".getBytes(StandardCharsets.UTF_8));
-        System.out.println(commitLogAppendHandler.readMes(topic));
+        for (int i = 0; i < 10; i++) {
+            commitLogAppendHandler.appendMsg(topic, ("this is content " + (i + 1)).getBytes());
+            System.out.println("第 " + (i + 1) + " 写入数据");
+            TimeUnit.SECONDS.sleep(5);
+        }
+        System.out.println(commitLogAppendHandler.readMsg(topic));
     }
 }

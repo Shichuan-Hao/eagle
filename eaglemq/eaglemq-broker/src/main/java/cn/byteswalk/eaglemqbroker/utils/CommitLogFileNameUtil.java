@@ -69,4 +69,18 @@ public class CommitLogFileNameUtil {
         }
     }
 
+    /**
+     * 构建新的CommitLog文件路径
+     * @param topicName topic 名称
+     * @param commitLogFileName 新的 topic文件名称
+     * @return 返回新构建的 CommitLog 文件路径
+     */
+    public static String buildCommitLogFilePath(String topicName, String commitLogFileName) {
+        return CommonCache.getGlobalProperties().getEagleMqHome()
+                + BrokerConstants.BASE_STORE_PATH
+                + topicName
+                + "/"
+                + commitLogFileName;
+    }
+
 }

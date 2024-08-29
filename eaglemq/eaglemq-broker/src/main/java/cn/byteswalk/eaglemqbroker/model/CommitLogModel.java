@@ -1,5 +1,8 @@
 package cn.byteswalk.eaglemqbroker.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * commitLog 文件的写入offset封装
  */
@@ -12,7 +15,7 @@ public class CommitLogModel {
     /**
      * 最新commitLog文件写入数据的地址
      */
-    private Long offset;
+    private AtomicInteger offset;
 
     /**
      * commitLog 文件写入的最大上限体积
@@ -32,11 +35,11 @@ public class CommitLogModel {
         this.fileName = fileName;
     }
 
-    public Long getOffset() {
+    public AtomicInteger getOffset() {
         return offset;
     }
 
-    public void setOffset(Long offset) {
+    public void setOffset(AtomicInteger offset) {
         this.offset = offset;
     }
 
@@ -46,6 +49,11 @@ public class CommitLogModel {
 
     public void setOffsetLimit(Long offsetLimit) {
         this.offsetLimit = offsetLimit;
+    }
+
+
+    public Long countDiff() {
+        return this.offsetLimit - this.offset.get();
     }
 
     @Override

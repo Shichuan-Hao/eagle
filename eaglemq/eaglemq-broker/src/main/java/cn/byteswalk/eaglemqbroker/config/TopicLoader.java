@@ -45,10 +45,12 @@ public class TopicLoader {
         // 类似 Redis rdb 持久化思路（并发）
         CommonThreadPoolConfig.refreshTopicExecutor.execute(new Runnable() {
             @Override
+            @SuppressWarnings("InfiniteLoopStatement")
             public void run() {
                 do {
                     try {
                         TimeUnit.SECONDS.sleep(DEFAULT_REFRESH_MQ_TOPIC_TIME_STEP);
+                        System.out.println("刷新磁盘");
                         List<TopicModel> topicModelList = CommonCache.getTopicModelList();
                         FileContentUtil.overWriteToFile(topicJsonFilePath, JSON.toJSONString(topicModelList));
                     } catch (InterruptedException e) {

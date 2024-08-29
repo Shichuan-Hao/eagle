@@ -4,7 +4,6 @@ import cn.byteswalk.eaglemqbroker.config.GlobalProperties;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

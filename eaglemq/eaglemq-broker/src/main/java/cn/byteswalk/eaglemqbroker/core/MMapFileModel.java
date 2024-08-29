@@ -20,7 +20,10 @@ import java.nio.channels.FileChannel;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -97,11 +100,21 @@ public class MMapFileModel {
         //offset会用一个原子类AtomicLong去管理
         //线程安全问题：线程1：111，线程2：122
         //加锁机制 （锁的选择非常重要）
+        TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
+        if (topicModel == null) {
+            throw new IllegalArgumentException("topicModel is null");
+        }
+        CommitLogModel commitLogModel = topicModel.getCommitLogModel();
+        if (commitLogModel == null) {
+            throw new IllegalArgumentException("commitLogModel is null");
+        }
+
         this.checkCommitLogHasEnableSpace(commitLogMessageModel);
 
 
         // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
         mappedByteBuffer.put(commitLogMessageModel.convertToBytes());
+        commitLogModel.getOffset().addAndGet(commitLogMessageModel.getSize());
         if (force) {
             // 强制刷盘
             mappedByteBuffer.force();
@@ -149,14 +162,15 @@ public class MMapFileModel {
         }
         CommitLogModel commitLogModel = topicModel.getCommitLogModel();
         // 剩余可写入的空间值
-        long diff = commitLogModel.getOffsetLimit() - commitLogModel.getOffset();
+        long diff = commitLogModel.countDiff();
         String filePath = null;
         if (diff == 0) {
             // 已经写满了
-            filePath = this.createNewCommitLogFile(topicName, commitLogModel);
+            CommitLogFilePath newCommitLogFile = this.createNewCommitLogFile(topicName, commitLogModel);
+            filePath = newCommitLogFile.getFilePath();
         }  else if (diff > 0) {
             // 还有机会写入
-            filePath = this.filePath(topicName, commitLogModel.getFileName());;
+            filePath = CommitLogFileNameUtil.buildCommitLogFilePath(topicName, commitLogModel.getFileName());;
         }
         return filePath;
     }
@@ -167,10 +181,10 @@ public class MMapFileModel {
      * @param commitLogModel commitLog 对象
      * @return 返回最新的 commitLog 文件路径
      */
-    private String createNewCommitLogFile(String topicName, CommitLogModel commitLogModel) {
+    private CommitLogFilePath createNewCommitLogFile(String topicName, CommitLogModel commitLogModel) {
         // commitLog 命名规范
         String newFileName = CommitLogFileNameUtil.incrCommitLogFileName(commitLogModel.getFileName());
-        String newFilePath = this.filePath(topicName, newFileName);
+        String newFilePath = CommitLogFileNameUtil.buildCommitLogFilePath(topicName, newFileName);
         File newCommmitLogFile = new File(newFilePath);
         try {
             // 新的 commitLog文件创建
@@ -180,7 +194,7 @@ public class MMapFileModel {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return newFilePath;
+        return new CommitLogFilePath(newFileName, newFilePath);
     }
 
     private void checkCommitLogHasEnableSpace(CommitLogMessageModel commitLogMessageModel)
@@ -191,14 +205,17 @@ public class MMapFileModel {
         }
         CommitLogModel commitLogModel = topicModel.getCommitLogModel();
         // 剩余可写入的空间大小
-        long writeAbleOffsetNum = commitLogModel.getOffsetLimit() - commitLogModel.getOffset();
+        long writeAbleOffsetNum = commitLogModel.countDiff();
         // 空间不足，需要创建新的commitLog文件并且做映射
         if (writeAbleOffsetNum < commitLogMessageModel.getSize()) {
             // 00000000 文件 -> 00000001 文件
             // 空间利用率不是100%，比如某个commitLog剩余150byte【碎片空间】大小的空间，最新的消息体积是151byte【可以通过程序过滤掉】
-            String newCommitLogFilePath = this.createNewCommitLogFile(this.topicName, commitLogModel);
+            CommitLogFilePath newCommitLogFile = this.createNewCommitLogFile(this.topicName, commitLogModel);
+            commitLogModel.setFileName(newCommitLogFile.getFileName());
+            commitLogModel.setOffsetLimit(Long.valueOf(BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE));
+            commitLogModel.setOffset(new AtomicInteger(0));
             // 新文件路径映射进来
-            this.doMMap(newCommitLogFilePath, 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
+            this.doMMap(newCommitLogFile.getFilePath(), 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
         }
     }
 
@@ -243,12 +260,32 @@ public class MMapFileModel {
         }
     }
 
-    private String filePath(String topicName, String fileName) {
-        return CommonCache.getGlobalProperties().getEagleMqHome()
-                + BrokerConstants.BASE_STORE_PATH
-                + topicName
-                + fileName;
-    }
 
+    class CommitLogFilePath {
+
+        private String fileName;
+        private String filePath;
+
+        public CommitLogFilePath(String fileName, String filePath) {
+            this.fileName = fileName;
+            this.filePath = filePath;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public String getFilePath() {
+            return filePath;
+        }
+
+        public void setFilePath(String filePath) {
+            this.filePath = filePath;
+        }
+    }
 
 }
