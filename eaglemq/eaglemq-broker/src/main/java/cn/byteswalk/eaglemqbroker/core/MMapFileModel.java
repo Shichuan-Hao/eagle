@@ -6,6 +6,8 @@ import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 import cn.byteswalk.eaglemqbroker.model.CommitLogModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import cn.byteswalk.eaglemqbroker.utils.CommitLogFileNameUtil;
+import cn.byteswalk.eaglemqbroker.utils.PutMessageLock;
+import cn.byteswalk.eaglemqbroker.utils.UnfairReentrantLock;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +26,14 @@ import java.security.PrivilegedAction;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * 最基础的 mmap 对象模型
+ * @Author: Shaun Hao
+ * @CreateTime: 2024-08-27 15:02
+ * @Description: 最基础的 mmap 对象模型
+ * @Version: 1.0
  */
 public class MMapFileModel {
 
@@ -37,6 +43,7 @@ public class MMapFileModel {
     private MappedByteBuffer mappedByteBuffer;
     private FileChannel fileChannel;
     private String topicName;
+    private PutMessageLock putMessageLock;
 
     /**
      * 指定offset做文件映射
@@ -51,6 +58,8 @@ public class MMapFileModel {
         this.topicName = topicName;
         String filePath = getLatestCommitLogFile(topicName);
         this.doMMap(filePath, startOffset, mappedSize);
+        // 默认非公平模式
+        putMessageLock = new UnfairReentrantLock();
     }
 
     /**
@@ -61,6 +70,7 @@ public class MMapFileModel {
      * @return 返回读取内容
      */
     public byte[] readContent(int readOffset, int size) {
+        // consumerQueue
         mappedByteBuffer.position(readOffset);
         byte[] content = new byte[size];
         int j = 0;
@@ -109,16 +119,20 @@ public class MMapFileModel {
             throw new IllegalArgumentException("commitLogModel is null");
         }
 
-        this.checkCommitLogHasEnableSpace(commitLogMessageModel);
-
 
         // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
-        mappedByteBuffer.put(commitLogMessageModel.convertToBytes());
-        commitLogModel.getOffset().addAndGet(commitLogMessageModel.getSize());
+        // 线程安全保证：上锁
+        putMessageLock.lock();
+        // 检测当前 CommitLog 是否还有足够空间写入
+        this.checkCommitLogHasEnableSpace(commitLogMessageModel);
+        byte[] writeContent = commitLogMessageModel.convertToBytes();
+        mappedByteBuffer.put(writeContent);
+        commitLogModel.getOffset().addAndGet(writeContent.length);
         if (force) {
             // 强制刷盘
             mappedByteBuffer.force();
         }
+        putMessageLock.unlock();
     }
 
     /**
@@ -188,7 +202,9 @@ public class MMapFileModel {
         File newCommmitLogFile = new File(newFilePath);
         try {
             // 新的 commitLog文件创建
-            if (!newCommmitLogFile.createNewFile()) {
+            if (newCommmitLogFile.createNewFile()) {
+                System.out.println("创建了新的 CommitLog 文件，文件名称 :" + newFileName + "\n 文件位置：" + newFilePath);
+            } else {
                 throw new RuntimeException("create the new CommitLog File error");
             }
         } catch (IOException e) {
@@ -210,12 +226,13 @@ public class MMapFileModel {
         if (writeAbleOffsetNum < commitLogMessageModel.getSize()) {
             // 00000000 文件 -> 00000001 文件
             // 空间利用率不是100%，比如某个commitLog剩余150byte【碎片空间】大小的空间，最新的消息体积是151byte【可以通过程序过滤掉】
-            CommitLogFilePath newCommitLogFile = this.createNewCommitLogFile(this.topicName, commitLogModel);
-            commitLogModel.setFileName(newCommitLogFile.getFileName());
+            CommitLogFilePath commitLogFilePath = this.createNewCommitLogFile(this.topicName, commitLogModel);
+            commitLogModel.setFileName(commitLogFilePath.getFileName());
             commitLogModel.setOffsetLimit(Long.valueOf(BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE));
             commitLogModel.setOffset(new AtomicInteger(0));
+
             // 新文件路径映射进来
-            this.doMMap(newCommitLogFile.getFilePath(), 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
+            this.doMMap(commitLogFilePath.getFilePath(), 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
         }
     }
 
@@ -261,6 +278,9 @@ public class MMapFileModel {
     }
 
 
+    /**
+     * CommitLogFilePath
+     */
     class CommitLogFilePath {
 
         private String fileName;

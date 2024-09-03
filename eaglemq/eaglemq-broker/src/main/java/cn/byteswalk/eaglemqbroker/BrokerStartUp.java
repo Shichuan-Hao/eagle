@@ -7,6 +7,8 @@ import cn.byteswalk.eaglemqbroker.core.CommitLogAppendHandler;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 public class BrokerStartUp {
@@ -45,14 +47,21 @@ public class BrokerStartUp {
     public static void main(String[] args)
             throws IOException, InterruptedException {
         //加载配置 ，缓存对象的生成
+        Instant start_1 = Instant.now();
         initProperties();
-        //模拟初始化文件映射
+        Instant end_1  = Instant.now();
+        System.out.println("cost time: " + Duration.between(start_1, end_1).toMillis() + "ms");
+
+        Instant start_2 = Instant.now();
         String topic = "order_cancel_topic";
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 50000; i++) {
             commitLogAppendHandler.appendMsg(topic, ("this is content " + (i + 1)).getBytes());
             System.out.println("第 " + (i + 1) + " 写入数据");
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(1);
         }
+        Instant end_2  = Instant.now();
+        System.out.println("cost time: " + Duration.between(start_2, end_2).toMillis() + "ms");
+
         System.out.println(commitLogAppendHandler.readMsg(topic));
     }
 }
