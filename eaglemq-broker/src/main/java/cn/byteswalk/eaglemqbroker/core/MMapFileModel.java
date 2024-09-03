@@ -4,6 +4,7 @@ import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
 import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 import cn.byteswalk.eaglemqbroker.model.CommitLogModel;
+import cn.byteswalk.eaglemqbroker.model.ConsumerQueueDetailModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import cn.byteswalk.eaglemqbroker.utils.CommitLogFileNameUtil;
 import cn.byteswalk.eaglemqbroker.utils.PutMessageLock;
@@ -23,6 +24,7 @@ import java.nio.channels.FileChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import java.time.chrono.MinguoDate;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -127,12 +129,31 @@ public class MMapFileModel {
         this.checkCommitLogHasEnableSpace(commitLogMessageModel);
         byte[] writeContent = commitLogMessageModel.convertToBytes();
         mappedByteBuffer.put(writeContent);
-        commitLogModel.getOffset().addAndGet(writeContent.length);
+        AtomicInteger currentLatestMsgOffset  = commitLogModel.getOffset();
+        int writeContentLength = writeContent.length;
+        this.dispatcher(writeContentLength, currentLatestMsgOffset.get());
+        currentLatestMsgOffset.addAndGet(writeContentLength);
         if (force) {
             // 强制刷盘
             mappedByteBuffer.force();
         }
         putMessageLock.unlock();
+    }
+
+    /**
+     * 将 ConsumerQueue 写入
+     * @param msgLength 消息的长度
+     * @param msgIndex 消息的起始位置
+     */
+    private void dispatcher(int msgLength, int msgIndex) {
+        TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
+        if (topicModel == null) {
+            throw new RuntimeException("topic is undefined");
+        }
+        ConsumerQueueDetailModel consumerQueueDetailModel = new ConsumerQueueDetailModel();
+        consumerQueueDetailModel.setCommitLogFileName(topicModel.getCommitLogModel().getFileName());
+        consumerQueueDetailModel.setMsgIndex(msgIndex);
+        consumerQueueDetailModel.setMsgLength(msgLength);
     }
 
     /**

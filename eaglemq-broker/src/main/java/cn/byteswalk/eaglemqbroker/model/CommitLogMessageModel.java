@@ -16,7 +16,7 @@ public class CommitLogMessageModel {
     /**
      * 消息的体积大小，单位是字节
      */
-    private int size;
+    private int size; // 4byte
 
     /**
      * 真正的消息内容
