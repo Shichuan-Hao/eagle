@@ -6,37 +6,37 @@ package cn.byteswalk.eaglemqbroker.model;
  * @Description: ConsumerQueue 数据结构存储的最小单元对象
  * @Version: 1.0
  */
-public class ConsumerQueueDetailModel {
+public class ConsumeQueueDetailModel {
 
     /**
      * commitLog 文件名称
      */
-    private String commitLogFileName;
+    private int commitLogFileName; // 4byte
 
     /**
      * 消息的位置
      */
-    private long msgIndex;
+    private int msgIndex;  // 4byte
 
     /**
      * 消息的长度
      */
-    private int msgLength;
+    private int msgLength; // 4byte
 
 
-    public String getCommitLogFileName() {
+    public int getCommitLogFileName() {
         return commitLogFileName;
     }
 
-    public void setCommitLogFileName(String commitLogFileName) {
+    public void setCommitLogFileName(int commitLogFileName) {
         this.commitLogFileName = commitLogFileName;
     }
 
-    public long getMsgIndex() {
+    public int getMsgIndex() {
         return msgIndex;
     }
 
-    public void setMsgIndex(long msgIndex) {
+    public void setMsgIndex(int msgIndex) {
         this.msgIndex = msgIndex;
     }
 

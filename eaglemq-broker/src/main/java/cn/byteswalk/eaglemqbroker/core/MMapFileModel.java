@@ -4,7 +4,7 @@ import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
 import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 import cn.byteswalk.eaglemqbroker.model.CommitLogModel;
-import cn.byteswalk.eaglemqbroker.model.ConsumerQueueDetailModel;
+import cn.byteswalk.eaglemqbroker.model.ConsumeQueueDetailModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import cn.byteswalk.eaglemqbroker.utils.CommitLogFileNameUtil;
 import cn.byteswalk.eaglemqbroker.utils.PutMessageLock;
@@ -24,12 +24,8 @@ import java.nio.channels.FileChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import java.time.chrono.MinguoDate;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author: Shaun Hao
@@ -150,10 +146,11 @@ public class MMapFileModel {
         if (topicModel == null) {
             throw new RuntimeException("topic is undefined");
         }
-        ConsumerQueueDetailModel consumerQueueDetailModel = new ConsumerQueueDetailModel();
-        consumerQueueDetailModel.setCommitLogFileName(topicModel.getCommitLogModel().getFileName());
-        consumerQueueDetailModel.setMsgIndex(msgIndex);
-        consumerQueueDetailModel.setMsgLength(msgLength);
+        ConsumeQueueDetailModel consumeQueueDetailModel = new ConsumeQueueDetailModel();
+        String fileName = topicModel.getCommitLogModel().getFileName();
+        consumeQueueDetailModel.setCommitLogFileName(Integer.parseInt(fileName));
+        consumeQueueDetailModel.setMsgIndex(msgIndex);
+        consumeQueueDetailModel.setMsgLength(msgLength);
     }
 
     /**
@@ -244,7 +241,8 @@ public class MMapFileModel {
         // 剩余可写入的空间大小
         long writeAbleOffsetNum = commitLogModel.countDiff();
         // 空间不足，需要创建新的commitLog文件并且做映射
-        if (writeAbleOffsetNum < commitLogMessageModel.getSize()) {
+        int msgLength = commitLogMessageModel.convertToBytes().length;
+        if (writeAbleOffsetNum < msgLength) {
             // 00000000 文件 -> 00000001 文件
             // 空间利用率不是100%，比如某个commitLog剩余150byte【碎片空间】大小的空间，最新的消息体积是151byte【可以通过程序过滤掉】
             CommitLogFilePath commitLogFilePath = this.createNewCommitLogFile(this.topicName, commitLogModel);

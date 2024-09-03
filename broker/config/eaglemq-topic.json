@@ -1,1 +1,21 @@
-[{"commitLogModel":{"fileName":"00000000","offset":633,"offsetLimit":1048576},"createTime":1701918231281,"topicName":"order_cancel_topic","updateTime":1701918231280}]
+[
+  {
+    "commitLogModel": {
+      "fileName": "00000000",
+      "offset": 0,
+      "offsetLimit": 1048576
+    },
+    "createTime": 1701918231281,
+    "queueList": [
+      {
+        "id": 1,
+        "fileName": "00000000",
+        "offsetLimit": 6291456,
+        "latestOffset": 101,
+        "lastOffset": 0
+      }
+    ],
+    "topic": "order_cancel_topic",
+    "updateTime": 1701918231280
+  }
+]

@@ -1,6 +1,5 @@
 package cn.byteswalk.eaglemqbroker.core;
 
-
 import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 
 import java.io.IOException;
@@ -58,7 +57,6 @@ public class CommitLogAppendHandler {
         checkMMapFileModelIsNull(mMapFileModel);
 
         CommitLogMessageModel commitLogMessageModel = new CommitLogMessageModel();
-        commitLogMessageModel.setSize(content.length);
         commitLogMessageModel.setContent(content);
         mMapFileModel.writeContent(commitLogMessageModel);
     }

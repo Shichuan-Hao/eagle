@@ -1,6 +1,7 @@
 package cn.byteswalk.eaglemqbroker;
 
 import cn.byteswalk.eaglemqbroker.cache.CommonCache;
+import cn.byteswalk.eaglemqbroker.config.ConsumeQueueOffsetLoader;
 import cn.byteswalk.eaglemqbroker.config.GlobalPropertiesLoader;
 import cn.byteswalk.eaglemqbroker.config.TopicLoader;
 import cn.byteswalk.eaglemqbroker.core.CommitLogAppendHandler;
@@ -22,6 +23,7 @@ public class BrokerStartUp {
     private static GlobalPropertiesLoader globalPropertiesLoader;
     private static TopicLoader topicLoader;
     private static CommitLogAppendHandler commitLogAppendHandler;
+    private static ConsumeQueueOffsetLoader consumeQueueOffsetLoader;
 
     /**
      * 初始化配置
@@ -29,18 +31,22 @@ public class BrokerStartUp {
     private static void initProperties()
             throws IOException {
 
+        // 加载全局属性
         globalPropertiesLoader = new GlobalPropertiesLoader();
         globalPropertiesLoader.loadProperties();
 
-        // 创建 topic 属性加载器
+        // 创建 topic 属性加载器并载入相关 topic 属性和刷新磁盘
         topicLoader = new TopicLoader();
-        // 加载 topic 的属性
         topicLoader.loadProperties();
-        // 刷新 topic 的信息
         topicLoader.startRefreshTopicInfoTask();
 
-        commitLogAppendHandler = new CommitLogAppendHandler();
+        // 创建 ConsumeQueue 属性加载器并载入相关属性和刷新磁盘
+        consumeQueueOffsetLoader = new ConsumeQueueOffsetLoader();
+        consumeQueueOffsetLoader.loadProperties();
+        consumeQueueOffsetLoader.startRefreshConsumeQueueOffsetTask();
 
+        // CommitLog MMap 映射预加载
+        commitLogAppendHandler = new CommitLogAppendHandler();
         for (TopicModel topicModel : CommonCache.getTopicModelMap().values()) {
             String topicName = topicModel.getTopicName();
             // 预加载（映射）

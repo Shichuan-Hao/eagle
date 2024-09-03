@@ -1,6 +1,7 @@
 package cn.byteswalk.eaglemqbroker.cache;
 
 import cn.byteswalk.eaglemqbroker.config.GlobalProperties;
+import cn.byteswalk.eaglemqbroker.model.ConsumeQueueOffsetModel;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class CommonCache {
      */
     private static List<TopicModel> topicModelList = new ArrayList<>();
 
+    private static ConsumeQueueOffsetModel consumeQueueOffsetModel = new ConsumeQueueOffsetModel();
 
     public static GlobalProperties getGlobalProperties() {
         return globalProperties;
@@ -44,5 +46,13 @@ public class CommonCache {
 
     public static void setTopicModelList(List<TopicModel> topicModelList) {
         CommonCache.topicModelList = topicModelList;
+    }
+
+    public static ConsumeQueueOffsetModel getConsumeQueueOffsetModel() {
+        return consumeQueueOffsetModel;
+    }
+
+    public static void setConsumeQueueOffsetModel(ConsumeQueueOffsetModel consumeQueueOffsetModel) {
+        CommonCache.consumeQueueOffsetModel = consumeQueueOffsetModel;
     }
 }

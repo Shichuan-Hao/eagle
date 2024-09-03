@@ -6,6 +6,7 @@ import java.util.List;
  * mq的topic映射对象
  */
 public class TopicModel {
+
     private String topicName;
     private CommitLogModel commitLogModel;
     private List<QueueModel> queueModels;
