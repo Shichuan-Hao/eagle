@@ -6,12 +6,12 @@
     <parent>
         <groupId>cn.byteswalk</groupId>
         <artifactId>eaglemq</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <artifactId>eaglemq-broker</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0</version>
     <name>eaglemq-broker</name>
     <description>eaglemq-broker, MQ服务端的核心代码内容，消息原始数据存储，消息的索引文件存储，mmap等非常多的内容</description>
 

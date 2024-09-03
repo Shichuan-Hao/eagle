@@ -5,6 +5,8 @@ import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import cn.byteswalk.eaglemqbroker.utils.FileContentUtil;
 import com.alibaba.fastjson2.JSON;
 import io.netty.util.internal.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,7 @@ import static cn.byteswalk.eaglemqbroker.constants.BrokerConstants.DEFAULT_REFRE
 public class TopicLoader {
 
 
+    private static final Logger log = LoggerFactory.getLogger(TopicLoader.class);
     private String topicJsonFilePath;
 
     public void loadProperties() {
@@ -50,7 +53,7 @@ public class TopicLoader {
                 do {
                     try {
                         TimeUnit.SECONDS.sleep(DEFAULT_REFRESH_MQ_TOPIC_TIME_STEP);
-                        System.out.println("刷新磁盘");
+                        log.info("刷新磁盘");
                         List<TopicModel> topicModelList = CommonCache.getTopicModelList();
                         FileContentUtil.overWriteToFile(topicJsonFilePath, JSON.toJSONString(topicModelList));
                     } catch (InterruptedException e) {
