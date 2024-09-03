@@ -12,7 +12,7 @@
 
     <artifactId>eaglemq-console</artifactId>
     <version>1.0</version>
-    <name>MQ 控制台</name>
+    <name>eaglemq-console</name>
     <description>eeaglemq-console，MQ的可视化管理控制台</description>
 
     <properties>

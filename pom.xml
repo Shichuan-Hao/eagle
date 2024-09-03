@@ -30,6 +30,7 @@
 
 	<modules>
 		<module>eaglemq-broker</module>
+		<module>eaglemq-console</module>
 	</modules>
 
 
