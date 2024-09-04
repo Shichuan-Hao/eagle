@@ -67,10 +67,18 @@ public class ConsumeQueueDetailModel {
         return finalBytes;
     }
 
-    public ConsumeQueueDetailModel convertFromBytes(byte[] body) {
+    public ConsumeQueueDetailModel buildConsumeQueueDetailModel(byte[] body) {
         // 0,4 int
         // 4,8 int
         // 8,12 int
+        int commitLogFileName = ByteConvertUtils.bytesToInt(ByteConvertUtils.readInPos(body, 0, 4));
+        int msgIndex = ByteConvertUtils.bytesToInt(ByteConvertUtils.readInPos(body, 4, 4));
+        int msgLength = ByteConvertUtils.bytesToInt(ByteConvertUtils.readInPos(body, 8, 4));
+        ConsumeQueueDetailModel consumeQueueDetailModel = new ConsumeQueueDetailModel();
+        consumeQueueDetailModel.setCommitLogFileName(commitLogFileName);
+        consumeQueueDetailModel.setMsgIndex(msgIndex);
+        consumeQueueDetailModel.setMsgLength(msgLength);
+        return consumeQueueDetailModel;
     }
 }
 

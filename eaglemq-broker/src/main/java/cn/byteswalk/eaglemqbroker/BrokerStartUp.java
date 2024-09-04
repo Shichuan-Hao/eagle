@@ -32,23 +32,23 @@ public class BrokerStartUp {
      */
     private static void initProperties()
             throws IOException {
+        globalPropertiesLoader     = new GlobalPropertiesLoader();
+        topicLoader                = new TopicLoader();
+        consumeQueueOffsetLoader   = new ConsumeQueueOffsetLoader();
+        commitLogAppendHandler     = new CommitLogAppendHandler();
 
         // 加载全局属性
-        globalPropertiesLoader = new GlobalPropertiesLoader();
         globalPropertiesLoader.loadProperties();
 
         // 创建 [topic]CommitLog 属性加载器并载入相关 topic 属性和刷新磁盘
-        topicLoader = new TopicLoader();
         topicLoader.loadProperties();
         topicLoader.startRefreshTopicInfoTask();
 
         // 创建 ConsumeQueue 属性加载器并载入相关属性和刷新磁盘
-        consumeQueueOffsetLoader = new ConsumeQueueOffsetLoader();
         consumeQueueOffsetLoader.loadProperties();
         consumeQueueOffsetLoader.startRefreshConsumeQueueOffsetTask();
 
         // CommitLog MMap 映射预加载
-        commitLogAppendHandler = new CommitLogAppendHandler();
         for (TopicModel topicModel : CommonCache.getTopicModelMap().values()) {
             String topicName = topicModel.getTopicName();
             // 预加载（映射）
@@ -81,6 +81,6 @@ public class BrokerStartUp {
         logger.info("写入 {} 次数据开始时间 {}， 结束时间 {}， 用时： {} ms", j,
                 start_2, end_2, Duration.between(start_2, end_2).toMillis());
 
-        logger.info("读取内容：{}", commitLogAppendHandler.readMsg(topic));
+//        logger.info("读取内容：{}", commitLogAppendHandler.readMsg(topic));
     }
 }
