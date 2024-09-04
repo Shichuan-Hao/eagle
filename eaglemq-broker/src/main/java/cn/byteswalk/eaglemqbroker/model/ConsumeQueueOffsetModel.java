@@ -1,5 +1,6 @@
 package cn.byteswalk.eaglemqbroker.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,10 +11,10 @@ import java.util.Map;
  */
 public class ConsumeQueueOffsetModel {
 
-    private OffsetTable offsetTable;
+    private OffsetTable offsetTable = new OffsetTable();
 
-    private class OffsetTable {
-        private Map<String,ConsumerGroupDetail> topicConsumerGroupDetail;
+    public static class OffsetTable {
+        private Map<String,ConsumerGroupDetail> topicConsumerGroupDetail = new HashMap<>();
 
         public Map<String, ConsumerGroupDetail> getTopicConsumerGroupDetail() {
             return topicConsumerGroupDetail;
@@ -24,8 +25,8 @@ public class ConsumeQueueOffsetModel {
         }
     }
 
-    private class ConsumerGroupDetail {
-        private Map<String,Map<String,String>> consumerGroupDetailMap;
+    public static class ConsumerGroupDetail {
+        private Map<String,Map<String,String>> consumerGroupDetailMap = new HashMap<>();
 
         public Map<String, Map<String, String>> getConsumerGroupDetailMap() {
             return consumerGroupDetailMap;

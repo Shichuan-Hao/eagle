@@ -5,6 +5,7 @@ import cn.byteswalk.eaglemqbroker.config.ConsumeQueueOffsetLoader;
 import cn.byteswalk.eaglemqbroker.config.GlobalPropertiesLoader;
 import cn.byteswalk.eaglemqbroker.config.TopicLoader;
 import cn.byteswalk.eaglemqbroker.core.CommitLogAppendHandler;
+import cn.byteswalk.eaglemqbroker.core.ConsumeQueueAppendHandler;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ public class BrokerStartUp {
     private static TopicLoader topicLoader;
     private static CommitLogAppendHandler commitLogAppendHandler;
     private static ConsumeQueueOffsetLoader consumeQueueOffsetLoader;
+    private static ConsumeQueueAppendHandler consumeQueueAppendHandler;
 
     /**
      * 初始化配置
@@ -35,7 +37,7 @@ public class BrokerStartUp {
         globalPropertiesLoader = new GlobalPropertiesLoader();
         globalPropertiesLoader.loadProperties();
 
-        // 创建 topic 属性加载器并载入相关 topic 属性和刷新磁盘
+        // 创建 [topic]CommitLog 属性加载器并载入相关 topic 属性和刷新磁盘
         topicLoader = new TopicLoader();
         topicLoader.loadProperties();
         topicLoader.startRefreshTopicInfoTask();
@@ -51,6 +53,7 @@ public class BrokerStartUp {
             String topicName = topicModel.getTopicName();
             // 预加载（映射）
             commitLogAppendHandler.prepareMMapLoading(topicName);
+            consumeQueueAppendHandler.prepareMMapLoading(topicName);
         }
 
     }

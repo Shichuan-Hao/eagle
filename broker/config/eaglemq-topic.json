@@ -8,7 +8,7 @@
     "createTime": 1701918231281,
     "queueList": [
       {
-        "id": 1,
+        "id": 0,
         "fileName": "00000000",
         "offsetLimit": 6291456,
         "latestOffset": 101,

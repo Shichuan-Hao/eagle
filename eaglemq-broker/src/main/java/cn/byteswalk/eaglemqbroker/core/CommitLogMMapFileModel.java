@@ -2,13 +2,12 @@ package cn.byteswalk.eaglemqbroker.core;
 
 import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.constants.BrokerConstants;
-import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
-import cn.byteswalk.eaglemqbroker.model.CommitLogModel;
-import cn.byteswalk.eaglemqbroker.model.ConsumeQueueDetailModel;
-import cn.byteswalk.eaglemqbroker.model.TopicModel;
-import cn.byteswalk.eaglemqbroker.utils.CommitLogFileNameUtil;
+import cn.byteswalk.eaglemqbroker.model.*;
+import cn.byteswalk.eaglemqbroker.utils.LogFileNameUtil;
 import cn.byteswalk.eaglemqbroker.utils.PutMessageLock;
 import cn.byteswalk.eaglemqbroker.utils.UnfairReentrantLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +23,7 @@ import java.nio.channels.FileChannel;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description: 最基础的 mmap 对象模型
  * @Version: 1.0
  */
-public class MMapFileModel {
+public class CommitLogMMapFileModel {
 
     private static final String RW_ACCESS_MODE = "rw";
 
@@ -42,6 +42,8 @@ public class MMapFileModel {
     private FileChannel fileChannel;
     private String topicName;
     private PutMessageLock putMessageLock;
+
+    private static final Logger logger = LoggerFactory.getLogger(CommitLogMMapFileModel.class);
 
     /**
      * 指定offset做文件映射
@@ -127,6 +129,7 @@ public class MMapFileModel {
         mappedByteBuffer.put(writeContent);
         AtomicInteger currentLatestMsgOffset  = commitLogModel.getOffset();
         int writeContentLength = writeContent.length;
+        // CommitLog dispatch to ConsumeQueue
         this.dispatcher(writeContentLength, currentLatestMsgOffset.get());
         currentLatestMsgOffset.addAndGet(writeContentLength);
         if (force) {
@@ -146,11 +149,27 @@ public class MMapFileModel {
         if (topicModel == null) {
             throw new RuntimeException("topic is undefined");
         }
+
+        // TODO
+        int queueId = 0;
+
         ConsumeQueueDetailModel consumeQueueDetailModel = new ConsumeQueueDetailModel();
         String fileName = topicModel.getCommitLogModel().getFileName();
         consumeQueueDetailModel.setCommitLogFileName(Integer.parseInt(fileName));
         consumeQueueDetailModel.setMsgIndex(msgIndex);
         consumeQueueDetailModel.setMsgLength(msgLength);
+
+        // 方便往 mmap 里面丢
+        byte[] content = consumeQueueDetailModel.convertToBytes();
+        // 向 ConsumeQueue中写入
+        List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels = CommonCache.getConsumeQueueMMapFileModelManager().get(topicName);
+        consumeQueueMMapFileModels.stream().filter(c ->
+                c.getQueueId().equals(queueId)).findFirst()
+                .ifPresent(consumeQueueMMapFileModel -> consumeQueueMMapFileModel.writeContent(content));
+        // 更新 offset, eaglemq-topic.json -> queueList -> latestOffset
+        QueueModel queueModel = topicModel.getQueueModels().get(queueId); // 为什么是通过 queueId
+        queueModel.getLatestOffset().addAndGet(content.length);
+
     }
 
     /**
@@ -172,7 +191,8 @@ public class MMapFileModel {
         }
     }
 
-    private void doMMap(String filePath, int startOffset, int mappedSize) throws IOException {
+    private void doMMap(String filePath, int startOffset, int mappedSize)
+            throws IOException {
         file = new File(filePath);
         if (!file.exists() || !file.canWrite()) {
             throw new IOException("File path is invalid or not writable: " + filePath);
@@ -202,7 +222,7 @@ public class MMapFileModel {
             filePath = newCommitLogFile.getFilePath();
         }  else if (diff > 0) {
             // 还有机会写入
-            filePath = CommitLogFileNameUtil.buildCommitLogFilePath(topicName, commitLogModel.getFileName());;
+            filePath = LogFileNameUtil.buildCommitLogFilePath(topicName, commitLogModel.getFileName());;
         }
         return filePath;
     }
@@ -215,15 +235,15 @@ public class MMapFileModel {
      */
     private CommitLogFilePath createNewCommitLogFile(String topicName, CommitLogModel commitLogModel) {
         // commitLog 命名规范
-        String newFileName = CommitLogFileNameUtil.incrCommitLogFileName(commitLogModel.getFileName());
-        String newFilePath = CommitLogFileNameUtil.buildCommitLogFilePath(topicName, newFileName);
+        String newFileName = LogFileNameUtil.incrCommitLogFileName(commitLogModel.getFileName());
+        String newFilePath = LogFileNameUtil.buildCommitLogFilePath(topicName, newFileName);
         File newCommmitLogFile = new File(newFilePath);
         try {
             // 新的 commitLog文件创建
             if (newCommmitLogFile.createNewFile()) {
-                System.out.println("创建了新的 CommitLog 文件，文件名称 :" + newFileName + "\n 文件位置：" + newFilePath);
+                logger.info("创建了新的 CommitLog 文件，文件名称：{}， 文件位置：{}", newFileName, newFilePath);
             } else {
-                throw new RuntimeException("create the new CommitLog File error");
+                throw new RuntimeException("create the new CommitLog File error!");
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

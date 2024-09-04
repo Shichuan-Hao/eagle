@@ -1,5 +1,7 @@
 package cn.byteswalk.eaglemqbroker.model;
 
+import cn.byteswalk.eaglemqbroker.utils.ByteConvertUtils;
+
 /**
  * @Author: Shaun Hao
  * @CreateTime: 2024-09-03 13:34
@@ -15,6 +17,8 @@ public class ConsumeQueueDetailModel {
 
     /**
      * 消息的位置
+     * CommitLog 数据存储的地址
+     * mmap映射的地址，Integer.MAX校验
      */
     private int msgIndex;  // 4byte
 
@@ -46,6 +50,27 @@ public class ConsumeQueueDetailModel {
 
     public void setMsgLength(int msgLength) {
         this.msgLength = msgLength;
+    }
+
+    public byte[] convertToBytes() {
+        byte[] finalBytes = new byte[12];
+        int p = 0;
+        for (int i = 0; i < 4; i++) {
+            finalBytes[p++] = ByteConvertUtils.intToBytes(this.commitLogFileName)[i];
+        }
+        for (int i = 0; i < 4; i++) {
+            finalBytes[p++] = ByteConvertUtils.intToBytes(this.msgIndex)[i];
+        }
+        for (int i = 0; i < 4; i++) {
+            finalBytes[p++] = ByteConvertUtils.intToBytes(this.msgLength)[i];
+        }
+        return finalBytes;
+    }
+
+    public ConsumeQueueDetailModel convertFromBytes(byte[] body) {
+        // 0,4 int
+        // 4,8 int
+        // 8,12 int
     }
 }
 
