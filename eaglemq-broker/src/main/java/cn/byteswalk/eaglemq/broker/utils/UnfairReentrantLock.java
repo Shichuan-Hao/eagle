@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.utils;
+package cn.byteswalk.eaglemq.broker.utils;
 
 import java.util.concurrent.locks.ReentrantLock;
 

@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.core;
+package cn.byteswalk.eaglemq.broker.core;
 
 import java.util.HashMap;
 import java.util.Map;

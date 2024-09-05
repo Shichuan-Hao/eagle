@@ -1,6 +1,6 @@
-package cn.byteswalk.eaglemq.model;
+package cn.byteswalk.eaglemq.broker.model;
 
-import cn.byteswalk.eaglemq.utils.ByteConvertUtils;
+import cn.byteswalk.eaglemq.broker.utils.ByteConvertUtils;
 
 import java.util.Arrays;
 

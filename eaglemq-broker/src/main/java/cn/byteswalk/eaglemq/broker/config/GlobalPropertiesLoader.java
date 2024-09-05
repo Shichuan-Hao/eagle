@@ -1,6 +1,6 @@
-package cn.byteswalk.eaglemq.config;
+package cn.byteswalk.eaglemq.broker.config;
 
-import cn.byteswalk.eaglemq.cache.CommonCache;
+import cn.byteswalk.eaglemq.broker.cache.CommonCache;
 import cn.byteswalk.eaglemq.common.constants.CommonConstants;
 import io.netty.util.internal.StringUtil;
 

@@ -1,7 +1,7 @@
-package cn.byteswalk.eaglemq.cache;
+package cn.byteswalk.eaglemq.broker.cache;
 
-import cn.byteswalk.eaglemq.config.GlobalProperties;
-import cn.byteswalk.eaglemq.model.TopicModel;
+import cn.byteswalk.eaglemq.broker.config.GlobalProperties;
+import cn.byteswalk.eaglemq.broker.model.TopicModel;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.config;
+package cn.byteswalk.eaglemq.broker.config;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadFactory;

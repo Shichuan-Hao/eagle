@@ -1,7 +1,7 @@
 package cn.byteswalk.eaglemq.broker;
 
 
-import cn.byteswalk.eaglemq.utils.MMapUtil;
+import cn.byteswalk.eaglemq.broker.utils.MMapUtil;
 import org.junit.Before;
 import org.junit.Test;
 

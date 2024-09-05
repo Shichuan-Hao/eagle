@@ -1,6 +1,6 @@
-package cn.byteswalk.eaglemq.utils;
+package cn.byteswalk.eaglemq.broker.utils;
 
-import cn.byteswalk.eaglemq.cache.CommonCache;
+import cn.byteswalk.eaglemq.broker.cache.CommonCache;
 import cn.byteswalk.eaglemq.common.constants.CommonConstants;
 
 /**

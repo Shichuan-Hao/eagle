@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.model;
+package cn.byteswalk.eaglemq.broker.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;

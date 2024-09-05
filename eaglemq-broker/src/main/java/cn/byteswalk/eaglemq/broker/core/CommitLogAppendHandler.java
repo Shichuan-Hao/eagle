@@ -1,7 +1,7 @@
-package cn.byteswalk.eaglemq.core;
+package cn.byteswalk.eaglemq.broker.core;
 
 
-import cn.byteswalk.eaglemq.model.CommitLogMessageModel;
+import cn.byteswalk.eaglemq.broker.model.CommitLogMessageModel;
 
 import java.io.IOException;
 import java.util.Objects;

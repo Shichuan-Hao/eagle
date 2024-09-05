@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.config;
+package cn.byteswalk.eaglemq.broker.config;
 
 /**
  * 全局属性
