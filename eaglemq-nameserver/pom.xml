@@ -10,11 +10,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <artifactId>eaglemq-broker</artifactId>
+    <artifactId>eaglemq-nameserver</artifactId>
     <version>1.0</version>
-    <name>eaglemq-broker</name>
-    <description>eaglemq-broker, MQ服务端的核心代码内容，消息原始数据存储，消息的索引文件存储，mmap等非常多的内容</description>
-
+    <name>eaglemq-nameserver</name>
+    <description>eaglemq-nameserver, MQ的注册中心</description>
 
     <dependencies>
         <dependency>

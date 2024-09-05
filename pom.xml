@@ -30,7 +30,8 @@
 
 	<modules>
 		<module>eaglemq-broker</module>
-		<module>eaglemq-console</module>
+		<module>eaglemq-nameserver</module>
+		<module>eaglemq-common</module>
 	</modules>
 
 
