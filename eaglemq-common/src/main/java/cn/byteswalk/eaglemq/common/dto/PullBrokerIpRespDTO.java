@@ -9,7 +9,7 @@ import java.util.List;
  * @Version: 1.0
  */
 public class PullBrokerIpRespDTO
-        extends BaseNameServerRemoteDTO {
+        extends BaseRemoteDTO {
     private List<String> addressList;
     private List<String> masterAddressList;
     private List<String> slaveAddressList;

@@ -1,7 +1,6 @@
-package cn.byteswalk.eaglemq.broker.model;
+package cn.byteswalk.eaglemq.common.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * commitLog 文件的写入offset封装

@@ -2,7 +2,7 @@ package cn.byteswalk.eaglemq.broker.core;
 
 import cn.byteswalk.eaglemq.broker.cache.CommonCache;
 import cn.byteswalk.eaglemq.broker.model.CommitLogMessageModel;
-import cn.byteswalk.eaglemq.broker.model.CommitLogModel;
+import cn.byteswalk.eaglemq.common.model.CommitLogModel;
 import cn.byteswalk.eaglemq.common.model.TopicModel;
 import cn.byteswalk.eaglemq.broker.utils.CommitLogFileNameUtil;
 import cn.byteswalk.eaglemq.broker.utils.PutMessageLock;

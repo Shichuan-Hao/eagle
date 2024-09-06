@@ -12,7 +12,7 @@ import java.util.List;
  * @Version: 1.0
  */
 public class EagleMqBrokerDataDTO
-        extends BaseBrokerRemoteDTO{
+        extends BaseRemoteDTO {
     private List<TopicModel> eagleMqTopicModelList;
 
     private ConsumeQueueOffsetModel consumeQueueOffsetModel;

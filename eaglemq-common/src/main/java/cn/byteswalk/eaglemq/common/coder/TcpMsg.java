@@ -1,5 +1,7 @@
 package cn.byteswalk.eaglemq.common.coder;
 
+import cn.byteswalk.eaglemq.common.constants.BrokerConstants;
+
 /**
  * @Author: Shaun Hao
  * @CreateTime: 2024-09-05 13:43
@@ -33,6 +35,13 @@ public class TcpMsg {
      * 消息体
      */
     private byte[] body;
+
+    public TcpMsg(int code, byte[] body) {
+        this.magic = BrokerConstants.DEFAULT_MAGIC_NUM;
+        this.code = code;
+        this.body = body;
+        this.len = body.length;
+    }
 
 
     public short getMagic() {

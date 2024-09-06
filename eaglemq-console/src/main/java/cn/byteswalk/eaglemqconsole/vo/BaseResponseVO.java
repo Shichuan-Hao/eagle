@@ -14,27 +14,29 @@ public class BaseResponseVO<T> {
     private String msg;
     private T data;
 
-    public static <T> BaseResponseVO<T> success(Object data) {
-        BaseResponseVO responseVO = new BaseResponseVO();
-        responseVO.setCode(ResponseCodeEnum.SUCCESS.getCode());
-        responseVO.setData(data);
-        responseVO.setMsg(ResponseCodeEnum.SUCCESS.getDesc());
-        return responseVO;
-    }
-
-    public static <T> BaseResponseVO success() {
-        return new BaseResponseVO();
-    }
-
+    // 无参构造函数，默认成功响应
     public BaseResponseVO() {
+        this(ResponseCodeEnum.SUCCESS.getCode(), ResponseCodeEnum.SUCCESS.getDesc(), null);
     }
 
+    // 参数构造函数
     public BaseResponseVO(int code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
     }
 
+    // 静态泛型方法，返回带数据的成功响应
+    public static <T> BaseResponseVO<T> success(T data) {
+        return new BaseResponseVO<>(ResponseCodeEnum.SUCCESS.getCode(), ResponseCodeEnum.SUCCESS.getDesc(), data);
+    }
+
+    // 静态方法，返回不带数据的成功响应
+    public static <T> BaseResponseVO<T> success() {
+        return new BaseResponseVO<>(ResponseCodeEnum.SUCCESS.getCode(), ResponseCodeEnum.SUCCESS.getDesc(), null);
+    }
+
+    // Getter 和 Setter 方法
     public int getCode() {
         return code;
     }
@@ -59,4 +61,5 @@ public class BaseResponseVO<T> {
         this.data = data;
     }
 }
+
 

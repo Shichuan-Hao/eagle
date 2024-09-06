@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.broker.model;
+package cn.byteswalk.eaglemq.common.model;
 
 /**
  * 主题分区对象
