@@ -10,8 +10,8 @@ public class TopicModel {
     private String topicName;
     private CommitLogModel commitLogModel;
     private List<QueueModel> queueModels;
-    private Long createTime;
-    private Long updateTime;
+    private Long createAt;
+    private Long updateAt;
 
     public String getTopicName() {
         return topicName;
@@ -37,20 +37,20 @@ public class TopicModel {
         this.queueModels = queueModels;
     }
 
-    public Long getCreateTime() {
-        return createTime;
+    public Long getCreateAt() {
+        return createAt;
     }
 
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
+    public void setCreateAt(Long createAt) {
+        this.createAt = createAt;
     }
 
-    public Long getUpdateTime() {
-        return updateTime;
+    public Long getUpdateAt() {
+        return updateAt;
     }
 
-    public void setUpdateTime(Long updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdateAt(Long updateAt) {
+        this.updateAt = updateAt;
     }
 
     @Override
@@ -59,8 +59,8 @@ public class TopicModel {
                 "topic='" + topicName + '\'' +
                 ", commitLogModel=" + commitLogModel +
                 ", queueList=" + queueModels +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
+                ", createTime=" + createAt +
+                ", updateTime=" + updateAt +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import cn.byteswalk.eaglemqbroker.utils.FileContentUtil;
 
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson2.JSON;
 
 import io.netty.util.internal.StringUtil;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static cn.byteswalk.eaglemqbroker.constants.BrokerConstants.COMMITLOG_CONFIG;
 import static cn.byteswalk.eaglemqbroker.constants.BrokerConstants.DEFAULT_REFRESH_MQ_TOPIC_TIME_STEP;
 
 /**
@@ -26,7 +28,7 @@ public class TopicLoader {
 
 
     private static final Logger log = LoggerFactory.getLogger(TopicLoader.class);
-    private String topicJsonFilePath;
+    private String filePath;
 
     public void loadProperties() {
         GlobalProperties globalProperties = CommonCache.getGlobalProperties();
@@ -35,8 +37,8 @@ public class TopicLoader {
             throw new IllegalArgumentException("EAGLE_MQ_HOME is invalid!");
         }
 
-        topicJsonFilePath = basePath + "/broker/config/eaglemq-topic.json";
-        String fileContent = FileContentUtil.readFromFile(topicJsonFilePath);
+        filePath = basePath + COMMITLOG_CONFIG;
+        String fileContent = FileContentUtil.readFromFile(filePath);
         List<TopicModel> topicModelList = JSON.parseArray(fileContent, TopicModel.class);
 
         CommonCache.setTopicModelList(topicModelList);
@@ -56,9 +58,10 @@ public class TopicLoader {
                 do {
                     try {
                         TimeUnit.SECONDS.sleep(DEFAULT_REFRESH_MQ_TOPIC_TIME_STEP);
-                        log.info("CommitLog 写入情况刷新磁盘");
                         List<TopicModel> topicModelList = CommonCache.getTopicModelList();
-                        FileContentUtil.overWriteToFile(topicJsonFilePath, JSON.toJSONString(topicModelList));
+                        String prettyFormat = String.valueOf(SerializerFeature.PrettyFormat);
+                        String topicModelJSONArray = JSON.toJSONString(topicModelList, prettyFormat);
+                        FileContentUtil.overWriteToFile(filePath, topicModelJSONArray);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

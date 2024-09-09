@@ -52,6 +52,10 @@ public class ConsumeQueueDetailModel {
         this.msgLength = msgLength;
     }
 
+    /**
+     * 将ConsumeQueueDetailMode转换为字节数组
+     * @return byte[]
+     */
     public byte[] convertToBytes() {
         byte[] finalBytes = new byte[12];
         int p = 0;
@@ -67,18 +71,23 @@ public class ConsumeQueueDetailModel {
         return finalBytes;
     }
 
-    public ConsumeQueueDetailModel buildConsumeQueueDetailModel(byte[] body) {
+    /**
+     * 将字节数组转换为ConsumeQueueDetailMode
+     * @param body
+     */
+    public void buildFormBytes(byte[] body) {
         // 0,4 int
         // 4,8 int
         // 8,12 int
-        int commitLogFileName = ByteConvertUtils.bytesToInt(ByteConvertUtils.readInPos(body, 0, 4));
-        int msgIndex = ByteConvertUtils.bytesToInt(ByteConvertUtils.readInPos(body, 4, 4));
-        int msgLength = ByteConvertUtils.bytesToInt(ByteConvertUtils.readInPos(body, 8, 4));
-        ConsumeQueueDetailModel consumeQueueDetailModel = new ConsumeQueueDetailModel();
-        consumeQueueDetailModel.setCommitLogFileName(commitLogFileName);
-        consumeQueueDetailModel.setMsgIndex(msgIndex);
-        consumeQueueDetailModel.setMsgLength(msgLength);
-        return consumeQueueDetailModel;
+        byte[] commitLogFileNameByteArray = ByteConvertUtils.readInPos(body, 0, 4);
+        byte[] msgIndexByteArray = ByteConvertUtils.readInPos(body, 4, 4);
+        byte[] msgLengthByteArray = ByteConvertUtils.readInPos(body, 8, 4);
+        int commitLogFileName = ByteConvertUtils.bytesToInt(commitLogFileNameByteArray);
+        int msgIndex = ByteConvertUtils.bytesToInt(msgIndexByteArray);
+        int msgLength = ByteConvertUtils.bytesToInt(msgLengthByteArray);
+        this.setCommitLogFileName(commitLogFileName);
+        this.setMsgIndex(msgIndex);
+        this.setMsgLength(msgLength);
     }
 }
 

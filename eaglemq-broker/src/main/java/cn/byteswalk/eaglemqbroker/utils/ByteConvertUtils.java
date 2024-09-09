@@ -9,6 +9,13 @@ package cn.byteswalk.eaglemqbroker.utils;
 public class ByteConvertUtils {
 
 
+    /**
+     *
+     * @param source 原数组
+     * @param pos 位置
+     * @param len 长度
+     * @return byte[]
+     */
     public static byte[] readInPos(byte[] source, int pos, int len) {
         byte[] result = new byte[len];
         for (int i = pos, j = 0; i < pos + len; i++) {
@@ -18,6 +25,11 @@ public class ByteConvertUtils {
     }
 
 
+    /**
+     * 将 int 类型转换为字节数组
+     * @param value int 类型的
+     * @return byte[]
+     */
     public static byte[] intToBytes(int value) {
         byte[] src = new byte[4];
         //32位-24位=8位
@@ -29,6 +41,11 @@ public class ByteConvertUtils {
         return src;
     }
 
+    /**
+     * 字节数组转换为int
+     * @param ary bytes字节数组
+     * @return 返回字节数组
+     */
     public static int bytesToInt(byte[] ary) {
         int value;
         value = (int) ((ary[0] & 0xFF)

@@ -6,6 +6,7 @@ import cn.byteswalk.eaglemqbroker.model.*;
 import cn.byteswalk.eaglemqbroker.utils.LogFileNameUtil;
 import cn.byteswalk.eaglemqbroker.utils.PutMessageLock;
 import cn.byteswalk.eaglemqbroker.utils.UnfairReentrantLock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +38,9 @@ public class CommitLogMMapFileModel {
 
     private static final String RW_ACCESS_MODE = "rw";
 
-    private File file;
     private MappedByteBuffer mappedByteBuffer;
     private FileChannel fileChannel;
+    private ByteBuffer readByteBuffer;
     private String topicName;
     private PutMessageLock putMessageLock;
 
@@ -63,23 +64,49 @@ public class CommitLogMMapFileModel {
     }
 
     /**
-     * 支持从文件从指定的 offset 开始读取内容
-     *
-     * @param readOffset 读取内容的起始位置
-     * @param size       读取内容的大小
-     * @return 返回读取内容
+     * mmap 映射
+     * @param filePath 文件路径
+     * @param startOffset 起始位置
+     * @param mappedSize 映射的大小（文件大小）
+     * @throws IOException IOException
      */
-    public byte[] readContent(int readOffset, int size) {
-        // consumerQueue
-        mappedByteBuffer.position(readOffset);
-        byte[] content = new byte[size];
-        int j = 0;
-        for (int i = 0; i < size; i++) {
-            // 从内存里访问，快速高效，不用担心
-            byte b = mappedByteBuffer.get(readOffset + i);
-            content[j++] = b;
+    private void doMMap(String filePath, int startOffset, int mappedSize)
+            throws IOException {
+        File file = new File(filePath);
+        if (!file.exists() || !file.canWrite()) {
+            throw new IOException("File path is invalid or not writable: " + filePath);
         }
-        return content;
+        this.fileChannel = new RandomAccessFile(file, RW_ACCESS_MODE).getChannel();
+        this.mappedByteBuffer = this.fileChannel.map(FileChannel.MapMode.READ_WRITE, startOffset, mappedSize);
+        this.readByteBuffer = this.mappedByteBuffer.slice();
+        TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
+        this.mappedByteBuffer.position(topicModel.getCommitLogModel().getOffset().get());
+    }
+
+    /**
+     * 获取 commitLog 最新的地址
+     *
+     * @param topicName 消息主题
+     * @return 返回 commitLog 文件最新的地址
+     */
+    private String getLatestCommitLogFile(String topicName) {
+        TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
+        if (Objects.isNull(topicModel)) {
+            throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
+        }
+        CommitLogModel commitLogModel = topicModel.getCommitLogModel();
+        // 剩余可写入的空间值
+        long diff = commitLogModel.countDiff();
+        String filePath = null;
+        if (diff == 0) {
+            // 已经写满了
+            CommitLogFilePath newCommitLogFile = this.createNewCommitLogFile(topicName, commitLogModel);
+            filePath = newCommitLogFile.getFilePath();
+        } else if (diff > 0) {
+            // 还有机会写入
+            filePath = LogFileNameUtil.buildCommitLogFilePath(topicName, commitLogModel.getFileName());
+        }
+        return filePath;
     }
 
     /**
@@ -96,7 +123,7 @@ public class CommitLogMMapFileModel {
      * 写入数据到磁盘中
      *
      * @param commitLogMessageModel 内容
-     * @param force   强制刷盘标志
+     * @param force                 强制刷盘标志
      */
     public void writeContent(CommitLogMessageModel commitLogMessageModel, boolean force)
             throws IOException {
@@ -118,33 +145,51 @@ public class CommitLogMMapFileModel {
         if (commitLogModel == null) {
             throw new IllegalArgumentException("commitLogModel is null");
         }
+        try {
+            // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
+            // 线程安全保证：上锁
+            putMessageLock.lock();
+            // 检测当前 CommitLog 是否还有足够空间写入
+            this.checkCommitLogHasEnableSpace(commitLogMessageModel);
+            byte[] writeContent = commitLogMessageModel.convertToBytes();
+            mappedByteBuffer.put(writeContent);
 
+            AtomicInteger currentLatestMsgOffset = commitLogModel.getOffset();
+            // CommitLog dispatch to ConsumeQueue，分派
+            this.dispatcher(writeContent, currentLatestMsgOffset.get());
+            currentLatestMsgOffset.addAndGet(writeContent.length);
 
-        // 默认刷到 page cache 中，如果需要强制刷盘，这里要兼容
-        // 线程安全保证：上锁
-        putMessageLock.lock();
-        // 检测当前 CommitLog 是否还有足够空间写入
-        this.checkCommitLogHasEnableSpace(commitLogMessageModel);
-        byte[] writeContent = commitLogMessageModel.convertToBytes();
-        mappedByteBuffer.put(writeContent);
-        AtomicInteger currentLatestMsgOffset  = commitLogModel.getOffset();
-        int writeContentLength = writeContent.length;
-        // CommitLog dispatch to ConsumeQueue
-        this.dispatcher(writeContentLength, currentLatestMsgOffset.get());
-        currentLatestMsgOffset.addAndGet(writeContentLength);
-        if (force) {
-            // 强制刷盘
-            mappedByteBuffer.force();
+            if (force) {
+                // 强制刷盘
+                mappedByteBuffer.force();
+            }
+        } finally {
+            putMessageLock.unlock();
         }
-        putMessageLock.unlock();
+    }
+
+    /**
+     * 支持从文件从指定的 offset 开始读取内容
+     *
+     * @param pos 读取内容的起始位置
+     * @param length       读取内容的大小
+     * @return 返回读取内容
+     */
+    public byte[] readContent(int pos, int length) {
+        ByteBuffer readBuf = readByteBuffer.slice();
+        readBuf.position(pos);
+        byte[] readBytes = new byte[length];
+        readBuf.get(readBytes);
+        return readBytes;
     }
 
     /**
      * 将 ConsumerQueue 写入
-     * @param msgLength 消息的长度
-     * @param msgIndex 消息的起始位置
+     *
+     * @param writeContent 消息的长度
+     * @param msgIndex  消息的起始位置
      */
-    private void dispatcher(int msgLength, int msgIndex) {
+    private void dispatcher(byte[] writeContent, int msgIndex) {
         TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
         if (topicModel == null) {
             throw new RuntimeException("topic is undefined");
@@ -157,19 +202,48 @@ public class CommitLogMMapFileModel {
         String fileName = topicModel.getCommitLogModel().getFileName();
         consumeQueueDetailModel.setCommitLogFileName(Integer.parseInt(fileName));
         consumeQueueDetailModel.setMsgIndex(msgIndex);
-        consumeQueueDetailModel.setMsgLength(msgLength);
-
+        consumeQueueDetailModel.setMsgLength(writeContent.length);
         // 方便往 mmap 里面丢
         byte[] content = consumeQueueDetailModel.convertToBytes();
-        // 向 ConsumeQueue中写入
-        List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels = CommonCache.getConsumeQueueMMapFileModelManager().get(topicName);
+        consumeQueueDetailModel.buildFormBytes(content);
+        List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels = CommonCache.getConsumeQueueMMapFileModelManager()
+                .get(topicName);
         consumeQueueMMapFileModels.stream().filter(c ->
-                c.getQueueId().equals(queueId)).findFirst()
+                        c.getQueueId().equals(queueId)).findFirst()
                 .ifPresent(consumeQueueMMapFileModel -> consumeQueueMMapFileModel.writeContent(content));
+
         // 更新 offset, eaglemq-topic.json -> queueList -> latestOffset
         QueueModel queueModel = topicModel.getQueueModels().get(queueId); // 为什么是通过 queueId
         queueModel.getLatestOffset().addAndGet(content.length);
 
+    }
+
+    /**
+     * 检测 CommitLog 文件是否还有写入空间
+     * @param commitLogMessageModel CommitLog 消息对象模型
+     * @throws IOException IOException
+     */
+    private void checkCommitLogHasEnableSpace(CommitLogMessageModel commitLogMessageModel)
+            throws IOException {
+        TopicModel topicModel = CommonCache.getTopicModelMap().get(this.topicName);
+        if (Objects.isNull(topicModel)) {
+            throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
+        }
+        CommitLogModel commitLogModel = topicModel.getCommitLogModel();
+        // 剩余可写入的空间大小
+        long writeAbleOffsetNum = commitLogModel.countDiff();
+        // 空间不足，需要创建新的commitLog文件并且做映射
+        int msgLength = commitLogMessageModel.convertToBytes().length;
+        if (writeAbleOffsetNum < msgLength) {
+            // 00000000 文件 -> 00000001 文件
+            // 空间利用率不是100%，比如某个commitLog剩余150byte【碎片空间】大小的空间，最新的消息体积是151byte【可以通过程序过滤掉】
+            CommitLogFilePath commitLogFilePath = this.createNewCommitLogFile(this.topicName, commitLogModel);
+            commitLogModel.setFileName(commitLogFilePath.getFileName());
+            commitLogModel.setOffsetLimit(Long.valueOf(BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE));
+            commitLogModel.setOffset(new AtomicInteger(0));
+            // 新文件路径映射进来
+            this.doMMap(commitLogFilePath.getFilePath(), 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
+        }
     }
 
     /**
@@ -190,91 +264,6 @@ public class CommitLogMMapFileModel {
             }
         }
     }
-
-    private void doMMap(String filePath, int startOffset, int mappedSize)
-            throws IOException {
-        file = new File(filePath);
-        if (!file.exists() || !file.canWrite()) {
-            throw new IOException("File path is invalid or not writable: " + filePath);
-        }
-
-        this.fileChannel = new RandomAccessFile(file, RW_ACCESS_MODE).getChannel();
-        this.mappedByteBuffer = this.fileChannel.map(FileChannel.MapMode.READ_WRITE, startOffset, mappedSize);
-    }
-
-    /**
-     * 获取 commitLog 最新的地址
-     * @param topicName 消息主题
-     * @return 返回 commitLog 文件最新的地址
-     */
-    private String getLatestCommitLogFile(String topicName) {
-        TopicModel topicModel = CommonCache.getTopicModelMap().get(topicName);
-        if (Objects.isNull(topicModel)) {
-            throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
-        }
-        CommitLogModel commitLogModel = topicModel.getCommitLogModel();
-        // 剩余可写入的空间值
-        long diff = commitLogModel.countDiff();
-        String filePath = null;
-        if (diff == 0) {
-            // 已经写满了
-            CommitLogFilePath newCommitLogFile = this.createNewCommitLogFile(topicName, commitLogModel);
-            filePath = newCommitLogFile.getFilePath();
-        }  else if (diff > 0) {
-            // 还有机会写入
-            filePath = LogFileNameUtil.buildCommitLogFilePath(topicName, commitLogModel.getFileName());;
-        }
-        return filePath;
-    }
-
-    /**
-     * 获取最新的 commitLog 文件路径
-     * @param topicName 消息主题
-     * @param commitLogModel commitLog 对象
-     * @return 返回最新的 commitLog 文件路径
-     */
-    private CommitLogFilePath createNewCommitLogFile(String topicName, CommitLogModel commitLogModel) {
-        // commitLog 命名规范
-        String newFileName = LogFileNameUtil.incrCommitLogFileName(commitLogModel.getFileName());
-        String newFilePath = LogFileNameUtil.buildCommitLogFilePath(topicName, newFileName);
-        File newCommmitLogFile = new File(newFilePath);
-        try {
-            // 新的 commitLog文件创建
-            if (newCommmitLogFile.createNewFile()) {
-                logger.info("创建了新的 CommitLog 文件，文件名称：{}， 文件位置：{}", newFileName, newFilePath);
-            } else {
-                throw new RuntimeException("create the new CommitLog File error!");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return new CommitLogFilePath(newFileName, newFilePath);
-    }
-
-    private void checkCommitLogHasEnableSpace(CommitLogMessageModel commitLogMessageModel)
-            throws IOException {
-        TopicModel topicModel = CommonCache.getTopicModelMap().get(this.topicName);
-        if (Objects.isNull(topicModel)) {
-            throw new IllegalArgumentException("topic is inValid! topicName is " + topicName);
-        }
-        CommitLogModel commitLogModel = topicModel.getCommitLogModel();
-        // 剩余可写入的空间大小
-        long writeAbleOffsetNum = commitLogModel.countDiff();
-        // 空间不足，需要创建新的commitLog文件并且做映射
-        int msgLength = commitLogMessageModel.convertToBytes().length;
-        if (writeAbleOffsetNum < msgLength) {
-            // 00000000 文件 -> 00000001 文件
-            // 空间利用率不是100%，比如某个commitLog剩余150byte【碎片空间】大小的空间，最新的消息体积是151byte【可以通过程序过滤掉】
-            CommitLogFilePath commitLogFilePath = this.createNewCommitLogFile(this.topicName, commitLogModel);
-            commitLogModel.setFileName(commitLogFilePath.getFileName());
-            commitLogModel.setOffsetLimit(Long.valueOf(BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE));
-            commitLogModel.setOffset(new AtomicInteger(0));
-
-            // 新文件路径映射进来
-            this.doMMap(commitLogFilePath.getFilePath(), 0, BrokerConstants.COMMIT_DEFAULT_MMAP_SIZE);
-        }
-    }
-
 
     // AccessController.doPrivileged 在 jdk17 已经过时
     private Object invoke(final Object target, final String methodName, final Class<?>... args) {
@@ -320,7 +309,7 @@ public class CommitLogMMapFileModel {
     /**
      * CommitLogFilePath
      */
-    class CommitLogFilePath {
+      static class CommitLogFilePath {
 
         private String fileName;
         private String filePath;
@@ -345,6 +334,31 @@ public class CommitLogMMapFileModel {
         public void setFilePath(String filePath) {
             this.filePath = filePath;
         }
+    }
+
+    /**
+     * 获取最新的 commitLog 文件路径
+     *
+     * @param topicName      消息主题
+     * @param commitLogModel commitLog 对象
+     * @return 返回最新的 commitLog 文件路径
+     */
+    private CommitLogFilePath createNewCommitLogFile(String topicName, CommitLogModel commitLogModel) {
+        // commitLog 命名规范
+        String newFileName = LogFileNameUtil.incrCommitLogFileName(commitLogModel.getFileName());
+        String newFilePath = LogFileNameUtil.buildCommitLogFilePath(topicName, newFileName);
+        File newCommmitLogFile = new File(newFilePath);
+        try {
+            // 新的 commitLog文件创建
+            if (newCommmitLogFile.createNewFile()) {
+                logger.info("创建了新的 CommitLog 文件");
+            } else {
+                throw new RuntimeException("create the new CommitLog File error!");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return new CommitLogFilePath(newFileName, newFilePath);
     }
 
 }

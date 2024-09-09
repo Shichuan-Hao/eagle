@@ -15,7 +15,6 @@ public class ConsumeQueueMMapFileModelManager {
 
 
     private final Map<String, List<ConsumeQueueMMapFileModel>> consumeQueueMMapFileModelMap = new HashMap<>();
-//    private final Map<String, List<ConsumeQueueMMapFileModel>> consumeQueueMMapFileModelMap = new ConcurrentHashMap<>();
 
     public void  put(String topic, List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels) {
         consumeQueueMMapFileModelMap.put(topic, consumeQueueMMapFileModels);

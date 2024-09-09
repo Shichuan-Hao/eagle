@@ -17,7 +17,6 @@ import java.util.List;
  */
 public class ConsumeQueueAppendHandler {
 
-
     /**
      *
      * @param topicName 消息主题名称
@@ -35,47 +34,12 @@ public class ConsumeQueueAppendHandler {
                     topicName,
                     queueModel.getId(),
                     queueModel.getLastOffset(),
+                    queueModel.getLatestOffset().get(),
                     queueModel.getOffsetLimit());
             consumeQueueMMapFileModels.add(consumeQueueMMapFileModel);
         }
         CommonCache.getConsumeQueueMMapFileModelManager().put(topicName, consumeQueueMMapFileModels);
     }
 
-    /**
-     * 读消息
-     * @param topicName 主题名称
-     * @return 返回读取的消息内容
-     */
-    public String readMsg(String topicName) {
-        List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels = CommonCache.getConsumeQueueMMapFileModelManager().get(topicName);
-        checkConsumeQueueMMapFileIsNull(consumeQueueMMapFileModels);
-        return null;
-    }
-
-    /**
-     * 像主题文件中追加写
-     * @param topicName 主题名称
-     * @param content 追加写的内容
-     */
-    public void appendMsg(String topicName, byte[] content)
-            throws IOException {
-        List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels = CommonCache.getConsumeQueueMMapFileModelManager().get(topicName);
-
-        checkConsumeQueueMMapFileIsNull(consumeQueueMMapFileModels);
-
-//        CommitLogMessageModel commitLogMessageModel = new CommitLogMessageModel();
-//        commitLogMessageModel.setContent(content);
-//        mMapFileModel.writeContent(commitLogMessageModel);
-    }
-
-    /**
-     * 判断文件内存映射对象是否胃口，如果为空则抛出“Topic is invalid!”异常信息
-     * @param consumeQueueMMapFileModels 文件内存映射对象
-     */
-    private void checkConsumeQueueMMapFileIsNull(List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels) {
-        if (consumeQueueMMapFileModels == null || consumeQueueMMapFileModels.isEmpty()) {
-            throw new RuntimeException("Topic is invalid!");
-        }
-    }
 }
 

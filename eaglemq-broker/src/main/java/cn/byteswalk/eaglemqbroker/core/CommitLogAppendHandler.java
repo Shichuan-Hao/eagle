@@ -1,5 +1,6 @@
 package cn.byteswalk.eaglemqbroker.core;
 
+import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.model.CommitLogMessageModel;
 
 import java.io.IOException;
@@ -14,11 +15,6 @@ import static cn.byteswalk.eaglemqbroker.constants.BrokerConstants.START_OFFSET;
 public class CommitLogAppendHandler {
 
     /**
-     * MMapFileModelManager
-     */
-    private final CommitLogMMapFileModelManager commitLogMMapFileModelManager = new CommitLogMMapFileModelManager();
-
-    /**
      *
      * @param topicName 消息主题名称
      * @throws IOException the exception to io
@@ -27,7 +23,7 @@ public class CommitLogAppendHandler {
             throws IOException {
         CommitLogMMapFileModel commitLogMMapFileModel = new CommitLogMMapFileModel();
         commitLogMMapFileModel.loadFileInMMap(topicName, START_OFFSET, COMMIT_DEFAULT_MMAP_SIZE);
-        commitLogMMapFileModelManager.put(topicName, commitLogMMapFileModel);
+        CommonCache.getCommitLogMMapFileModelManager().put(topicName, commitLogMMapFileModel);
     }
 
 
@@ -38,7 +34,8 @@ public class CommitLogAppendHandler {
      */
     public void appendMsg(String topicName, byte[] content)
             throws IOException {
-        CommitLogMMapFileModel commitLogMMapFileModel = commitLogMMapFileModelManager.get(topicName);
+        CommitLogMMapFileModel commitLogMMapFileModel = CommonCache.getCommitLogMMapFileModelManager()
+                .get(topicName);
 
         checkMMapFileModelIsNull(commitLogMMapFileModel);
 

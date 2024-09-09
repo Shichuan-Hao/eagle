@@ -20,7 +20,7 @@ public class CommonThreadPoolConfig {
             1,
             30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10), r -> {
                 Thread thread = new Thread(r);
-                thread.setName("refresh-eagle-mq-topic-config");
+                thread.setName("refresh-eagle-mq-cl-config");
                 return thread;
             });
 
@@ -32,7 +32,7 @@ public class CommonThreadPoolConfig {
             1,
             30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10), r -> {
         Thread thread = new Thread(r);
-        thread.setName("refresh-eagle-consumer-queue-offset-config");
+        thread.setName("refresh-eagle-mq-cqo-config");
         return thread;
     });
 }

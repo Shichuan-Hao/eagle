@@ -2,9 +2,9 @@ package cn.byteswalk.eaglemqbroker.config;
 
 import cn.byteswalk.eaglemqbroker.cache.CommonCache;
 import cn.byteswalk.eaglemqbroker.model.ConsumeQueueOffsetModel;
-import cn.byteswalk.eaglemqbroker.model.TopicModel;
 import cn.byteswalk.eaglemqbroker.utils.FileContentUtil;
 
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson2.JSON;
 
 import io.netty.util.internal.StringUtil;
@@ -12,9 +12,9 @@ import io.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static cn.byteswalk.eaglemqbroker.constants.BrokerConstants.CONSUME_QUEUE_OFFSET_CONFIG;
 import static cn.byteswalk.eaglemqbroker.constants.BrokerConstants.DEFAULT_REFRESH_MQ_CONSUMER_QUEUE_OFFSET_STEP;
 
 /**
@@ -35,8 +35,7 @@ public class ConsumeQueueOffsetLoader {
         if (StringUtil.isNullOrEmpty(basePath)) {
             throw new IllegalArgumentException("EAGLE_MQ_HOME is invalid!");
         }
-
-        filePath = basePath + "/broker/config/consumequeue-offset.json";
+        filePath = basePath + CONSUME_QUEUE_OFFSET_CONFIG;
         String fileContent = FileContentUtil.readFromFile(filePath);
         ConsumeQueueOffsetModel consumeQueueOffsetModel = JSON.parseObject(fileContent, ConsumeQueueOffsetModel.class);
         CommonCache.setConsumeQueueOffsetModel(consumeQueueOffsetModel);
@@ -56,9 +55,10 @@ public class ConsumeQueueOffsetLoader {
                 do {
                     try {
                         TimeUnit.SECONDS.sleep(DEFAULT_REFRESH_MQ_CONSUMER_QUEUE_OFFSET_STEP);
-                        log.info("ConsumeQueue 的 offset 写入情况刷新磁盘");
-                        List<TopicModel> topicModelList = CommonCache.getTopicModelList();
-                        FileContentUtil.overWriteToFile(filePath, JSON.toJSONString(topicModelList));
+                        ConsumeQueueOffsetModel consumeQueueOffsetModel = CommonCache.getConsumeQueueOffsetModel();
+                        String prettyFormat = String.valueOf(SerializerFeature.PrettyFormat);
+                        String consumeQueueOffsetModelStr = JSON.toJSONString(consumeQueueOffsetModel, prettyFormat);
+                        FileContentUtil.overWriteToFile(filePath, consumeQueueOffsetModelStr);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
