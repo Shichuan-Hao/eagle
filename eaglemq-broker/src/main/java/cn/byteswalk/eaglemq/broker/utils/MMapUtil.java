@@ -1,7 +1,7 @@
 package cn.byteswalk.eaglemq.broker.utils;
 
 
-import cn.byteswalk.eaglemq.common.constants.CommonConstants;
+import cn.byteswalk.eaglemq.broker.constants.BrokerConstants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -169,7 +169,7 @@ public class MMapUtil {
     public static void main(String[] args) throws IOException, InterruptedException {
         MMapUtil mMapUtil = new MMapUtil();
         //映射1mb
-        mMapUtil.loadFileInMMap(CommonConstants.TEST_PATH, 0, 1024 * 1024);
+        mMapUtil.loadFileInMMap(BrokerConstants.TEST_PATH, 0, 1024 * 1024);
         CountDownLatch count = new CountDownLatch(1);
         CountDownLatch allWriteSuccess = new CountDownLatch(10);
         for (int i = 0; i < 10; i++) {

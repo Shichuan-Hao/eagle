@@ -1,7 +1,6 @@
 package cn.byteswalk.eaglemq.broker.config;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -21,8 +20,20 @@ public class CommonThreadPoolConfig {
             1,
             30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10), r -> {
                 Thread thread = new Thread(r);
-                thread.setName("refresh-eagle-mq-topic-config");
+                thread.setName("refresh-eagle-mq-cl-config");
                 return thread;
             });
+
+
+    /**
+     * 专门用于将 ConsumeQueue 配置异步刷盘使用
+     */
+    public static ThreadPoolExecutor refreshConsumeQueueOffsetExecutor = new ThreadPoolExecutor(1,
+            1,
+            30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10), r -> {
+        Thread thread = new Thread(r);
+        thread.setName("refresh-eagle-mq-cqo-config");
+        return thread;
+    });
 }
 

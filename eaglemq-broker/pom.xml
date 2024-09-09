@@ -16,11 +16,4 @@
     <description>eaglemq-broker, MQ服务端的核心代码内容，消息原始数据存储，消息的索引文件存储，mmap等非常多的内容</description>
 
 
-    <dependencies>
-        <dependency>
-            <groupId>cn.byteswalk</groupId>
-            <artifactId>eaglemq-common</artifactId>
-            <version>1.0</version>
-        </dependency>
-    </dependencies>
 </project>

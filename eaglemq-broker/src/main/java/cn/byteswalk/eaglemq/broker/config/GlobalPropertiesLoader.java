@@ -1,7 +1,8 @@
 package cn.byteswalk.eaglemq.broker.config;
 
+import cn.byteswalk.eaglemq.broker.constants.BrokerConstants;
 import cn.byteswalk.eaglemq.broker.cache.CommonCache;
-import cn.byteswalk.eaglemq.common.constants.CommonConstants;
+
 import io.netty.util.internal.StringUtil;
 
 /**
@@ -13,7 +14,7 @@ public class GlobalPropertiesLoader {
     public void loadProperties() {
         GlobalProperties globalProperties = new GlobalProperties();
         // 加载环境变量
-        String eagleMqHome  = System.getenv(CommonConstants.EAGLE_MQ_HOME);
+        String eagleMqHome  = System.getenv(BrokerConstants.EAGLE_MQ_HOME);
         if (StringUtil.isNullOrEmpty(eagleMqHome)) {
             throw new IllegalArgumentException("EAGLE_MQ_HOME is null!");
         }

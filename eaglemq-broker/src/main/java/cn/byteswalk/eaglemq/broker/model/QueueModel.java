@@ -1,14 +1,18 @@
 package cn.byteswalk.eaglemq.broker.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * 主题分区对象
  */
 public class QueueModel {
 
     private Integer id;
-    private Long minOffset;
-    private Long currentOffset;
-    private Long maxOffset;
+    private String fileName;
+    private Integer offsetLimit;
+    private AtomicInteger latestOffset;
+    private Integer lastOffset;
+
 
     public Integer getId() {
         return id;
@@ -18,37 +22,40 @@ public class QueueModel {
         this.id = id;
     }
 
-    public Long getMinOffset() {
-        return minOffset;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setMinOffset(Long minOffset) {
-        this.minOffset = minOffset;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public Long getCurrentOffset() {
-        return currentOffset;
+    public Integer getOffsetLimit() {
+        return offsetLimit;
     }
 
-    public void setCurrentOffset(Long currentOffset) {
-        this.currentOffset = currentOffset;
+    public void setOffsetLimit(Integer offsetLimit) {
+        this.offsetLimit = offsetLimit;
     }
 
-    public Long getMaxOffset() {
-        return maxOffset;
+    public AtomicInteger getLatestOffset() {
+        return latestOffset;
     }
 
-    public void setMaxOffset(Long maxOffset) {
-        this.maxOffset = maxOffset;
+    public void setLatestOffset(AtomicInteger latestOffset) {
+        this.latestOffset = latestOffset;
     }
 
-    @Override
-    public String toString() {
-        return "QueueModel{" +
-                "id=" + id +
-                ", minOffset=" + minOffset +
-                ", currentOffset=" + currentOffset +
-                ", maxOffset=" + maxOffset +
-                '}';
+    public Integer getLastOffset() {
+        return lastOffset;
+    }
+
+    public void setLastOffset(Integer lastOffset) {
+        this.lastOffset = lastOffset;
+    }
+
+
+    public int countDiff() {
+        return this.getOffsetLimit() - this.getLatestOffset().get();
     }
 }
