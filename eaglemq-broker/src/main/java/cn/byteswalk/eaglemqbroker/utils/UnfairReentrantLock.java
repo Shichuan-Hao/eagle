@@ -12,7 +12,6 @@ public class UnfairReentrantLock implements PutMessageLock{
 
    private final ReentrantLock reentrantLock =  new ReentrantLock();
 
-
     @Override
     public void lock() {
         reentrantLock.lock();
@@ -21,7 +20,6 @@ public class UnfairReentrantLock implements PutMessageLock{
     @Override
     public void unlock() {
         reentrantLock.unlock();
-
     }
 }
 

@@ -18,9 +18,7 @@ import java.nio.channels.FileChannel;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author hsc
