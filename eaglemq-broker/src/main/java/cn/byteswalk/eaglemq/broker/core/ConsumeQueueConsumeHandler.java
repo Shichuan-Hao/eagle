@@ -5,8 +5,8 @@ import cn.byteswalk.eaglemq.broker.model.ConsumeQueueDetailModel;
 import cn.byteswalk.eaglemq.broker.model.ConsumeQueueOffsetModel;
 import cn.byteswalk.eaglemq.broker.model.QueueModel;
 import cn.byteswalk.eaglemq.broker.model.TopicModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class ConsumeQueueConsumeHandler {
 
-   private static final Logger logger = LoggerFactory.getLogger(ConsumeQueueConsumeHandler.class);
+//   private static final Logger logger = LoggerFactory.getLogger(ConsumeQueueConsumeHandler.class);
 
     /**
      * 读取当前最新一条ConsumeQueue的消息内容
@@ -94,7 +94,8 @@ public class ConsumeQueueConsumeHandler {
             consumeQueueOffsetDetailMap.put(String.valueOf(queueId), fileName + "#" + currentOffset);
             return true;
         } catch (Exception e) {
-            logger.error("ack 操作异常");
+//            logger.error("ack 操作异常");
+            System.out.println("ack 操作异常");
             return false;
         }
     }

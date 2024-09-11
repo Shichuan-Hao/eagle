@@ -8,8 +8,6 @@ import cn.byteswalk.eaglemq.broker.core.CommitLogAppendHandler;
 import cn.byteswalk.eaglemq.broker.core.ConsumeQueueAppendHandler;
 import cn.byteswalk.eaglemq.broker.core.ConsumeQueueConsumeHandler;
 import cn.byteswalk.eaglemq.broker.model.TopicModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BrokerStartUp {
 
-    private static final Logger logger = LoggerFactory.getLogger(BrokerStartUp.class);
+//    private static final Logger logger = LoggerFactory.getLogger(BrokerStartUp.class);
 
     private static GlobalPropertiesLoader globalPropertiesLoader;
     private static TopicLoader topicLoader;
@@ -142,6 +140,7 @@ public class BrokerStartUp {
             }
         }).start();
 
-        logger.info("\33[32;4m开始多线程消费验证\33[0;4m");
+//        logger.info("\33[32;4m开始多线程消费验证\33[0;4m");
+        System.out.println("\33[32;4m开始多线程消费验证\33[0;4m");
     }
 }

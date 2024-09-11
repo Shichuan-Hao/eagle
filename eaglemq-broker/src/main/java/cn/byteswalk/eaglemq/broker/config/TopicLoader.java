@@ -9,8 +9,6 @@ import com.alibaba.fastjson2.JSON;
 
 import io.netty.util.internal.StringUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +25,7 @@ import static cn.byteswalk.eaglemq.broker.constants.BrokerConstants.DEFAULT_REFR
 public class TopicLoader {
 
 
-    private static final Logger log = LoggerFactory.getLogger(TopicLoader.class);
+//    private static final Logger log = LoggerFactory.getLogger(TopicLoader.class);
     private String filePath;
 
     public void loadProperties() {

@@ -7,9 +7,6 @@ import cn.byteswalk.eaglemq.broker.utils.LogFileNameUtil;
 import cn.byteswalk.eaglemq.broker.utils.PutMessageLock;
 import cn.byteswalk.eaglemq.broker.utils.UnfairReentrantLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -44,7 +41,7 @@ public class CommitLogMMapFileModel {
     private String topicName;
     private PutMessageLock putMessageLock;
 
-    private static final Logger logger = LoggerFactory.getLogger(CommitLogMMapFileModel.class);
+//    private static final Logger logger = LoggerFactory.getLogger(CommitLogMMapFileModel.class);
 
     /**
      * 指定offset做文件映射
@@ -351,7 +348,8 @@ public class CommitLogMMapFileModel {
         try {
             // 新的 commitLog文件创建
             if (newCommmitLogFile.createNewFile()) {
-                logger.info("创建了新的 CommitLog 文件");
+//                logger.info("创建了新的 CommitLog 文件");
+                System.out.println("创建了新的 CommitLog 文件");
             } else {
                 throw new RuntimeException("create the new CommitLog File error!");
             }

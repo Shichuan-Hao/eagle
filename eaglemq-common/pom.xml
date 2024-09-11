@@ -6,14 +6,16 @@
     <parent>
         <groupId>cn.byteswalk</groupId>
         <artifactId>eaglemq</artifactId>
-        <version>0.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>eaglemq-common</artifactId>
-    <version>1.0</version>
     <name>eaglemq-common</name>
     <description>eaglemq-common, MQ的注册中心</description>
 
+
+    <dependencies>
+
+    </dependencies>
 
 </project>

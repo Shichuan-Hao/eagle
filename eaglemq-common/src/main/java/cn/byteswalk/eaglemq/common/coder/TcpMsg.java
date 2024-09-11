@@ -34,6 +34,12 @@ public class TcpMsg {
      */
     private byte[] body;
 
+    public TcpMsg() {}
+
+    public TcpMsg(int code, byte[] body) {
+        this.code = code;
+        this.body = body;
+    }
 
     public short getMagic() {
         return magic;

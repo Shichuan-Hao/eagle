@@ -10,8 +10,6 @@ import com.alibaba.fastjson2.JSON;
 
 import io.netty.util.internal.StringUtil;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ConsumeQueueOffsetLoader {
 
-    private final Logger log = LoggerFactory.getLogger(ConsumeQueueOffsetLoader.class);
+//    private final Logger log = LoggerFactory.getLogger(ConsumeQueueOffsetLoader.class);
 
     private String filePath;
 
