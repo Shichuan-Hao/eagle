@@ -6,8 +6,9 @@ import cn.byteswalk.eaglemq.broker.model.TopicModel;
 import cn.byteswalk.eaglemq.broker.utils.LogFileNameUtil;
 import cn.byteswalk.eaglemq.broker.utils.PutMessageLock;
 import cn.byteswalk.eaglemq.broker.utils.UnfairReentrantLock;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.util.Objects;
  */
 public class ConsumeQueueMMapFileModel {
 
-//    private static final Logger logger = LoggerFactory.getLogger(ConsumeQueueMMapFileModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumeQueueMMapFileModel.class);
 
     private static final String RW_ACCESS_MODE = "rw";
 

@@ -1,5 +1,7 @@
 package cn.byteswalk.eaglemq.broker.core;
 
+import com.google.common.collect.Maps;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +15,7 @@ import java.util.Map;
 public class ConsumeQueueMMapFileModelManager {
 
 
-    private final Map<String, List<ConsumeQueueMMapFileModel>> consumeQueueMMapFileModelMap = new HashMap<>();
+    private final Map<String, List<ConsumeQueueMMapFileModel>> consumeQueueMMapFileModelMap = Maps.newHashMap();
 
     public void  put(String topic, List<ConsumeQueueMMapFileModel> consumeQueueMMapFileModels) {
         consumeQueueMMapFileModelMap.put(topic, consumeQueueMMapFileModels);

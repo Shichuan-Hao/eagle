@@ -5,6 +5,7 @@ import cn.byteswalk.eaglemq.broker.model.ConsumeQueueOffsetModel;
 import cn.byteswalk.eaglemq.broker.model.TopicModel;
 import cn.byteswalk.eaglemq.broker.core.CommitLogMMapFileModelManager;
 import cn.byteswalk.eaglemq.broker.core.ConsumeQueueMMapFileModelManager;
+import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class CommonCache {
 
 
     private static GlobalProperties globalProperties = new GlobalProperties();
-    private static List<TopicModel> topicModelList = new ArrayList<>();
+    private static List<TopicModel> topicModelList = Lists.newArrayList();
     private static ConsumeQueueOffsetModel consumeQueueOffsetModel = new ConsumeQueueOffsetModel();
     private static ConsumeQueueMMapFileModelManager consumeQueueMMapFileModelManager = new ConsumeQueueMMapFileModelManager();
     private static CommitLogMMapFileModelManager commitLogMMapFileModelManager = new CommitLogMMapFileModelManager();

@@ -7,6 +7,9 @@ import cn.byteswalk.eaglemq.broker.utils.LogFileNameUtil;
 import cn.byteswalk.eaglemq.broker.utils.PutMessageLock;
 import cn.byteswalk.eaglemq.broker.utils.UnfairReentrantLock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -41,7 +44,7 @@ public class CommitLogMMapFileModel {
     private String topicName;
     private PutMessageLock putMessageLock;
 
-//    private static final Logger logger = LoggerFactory.getLogger(CommitLogMMapFileModel.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommitLogMMapFileModel.class);
 
     /**
      * 指定offset做文件映射
