@@ -6,6 +6,7 @@ package cn.byteswalk.eaglemq.nameserver.event.model;
  * @Description: 注册事件（首次注册到注册中心使用）
  * @Version: 1.0
  */
-public class RegistryEvent extends Event{
+public class RegistryEvent
+        extends Event {
 }
 

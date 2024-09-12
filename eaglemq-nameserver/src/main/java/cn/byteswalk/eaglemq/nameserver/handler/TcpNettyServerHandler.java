@@ -2,6 +2,7 @@ package cn.byteswalk.eaglemq.nameserver.handler;
 
 import cn.byteswalk.eaglemq.common.coder.TcpMsg;
 import cn.byteswalk.eaglemq.common.enums.NameServerEventCode;
+import cn.byteswalk.eaglemq.nameserver.event.EventBus;
 import cn.byteswalk.eaglemq.nameserver.event.model.HeartBeatEvent;
 import cn.byteswalk.eaglemq.nameserver.event.model.RegistryEvent;
 import cn.byteswalk.eaglemq.nameserver.event.model.UnRegistryEvent;
@@ -23,6 +24,14 @@ public class TcpNettyServerHandler
         extends SimpleChannelInboundHandler<Object> {
 
 //    private static final Logger log = LoggerFactory.getLogger(TcpNettyServerHandler.class);
+
+    private EventBus eventBus;
+
+    public TcpNettyServerHandler(EventBus eventBus) {
+        this.eventBus = eventBus;
+        this.eventBus.init();
+    }
+
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg)

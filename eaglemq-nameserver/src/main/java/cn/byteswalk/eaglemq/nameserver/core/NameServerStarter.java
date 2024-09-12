@@ -2,7 +2,9 @@ package cn.byteswalk.eaglemq.nameserver.core;
 
 import cn.byteswalk.eaglemq.common.coder.TcpMsgDecoder;
 import cn.byteswalk.eaglemq.common.coder.TcpMsgEncoder;
+import cn.byteswalk.eaglemq.nameserver.event.EventBus;
 import cn.byteswalk.eaglemq.nameserver.handler.TcpNettyServerHandler;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -49,7 +51,7 @@ public class NameServerStarter {
             protected void initChannel(Channel channel) throws Exception {
                 channel.pipeline().addLast(new TcpMsgDecoder());
                 channel.pipeline().addLast(new TcpMsgEncoder());
-                channel.pipeline().addLast(new TcpNettyServerHandler());
+                channel.pipeline().addLast(new TcpNettyServerHandler(new EventBus()));
             }
         });
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

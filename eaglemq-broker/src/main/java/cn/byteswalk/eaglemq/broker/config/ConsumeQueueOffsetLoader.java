@@ -11,6 +11,7 @@ import com.alibaba.fastjson2.JSON;
 import io.netty.util.internal.StringUtil;
 
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,9 +29,7 @@ public class ConsumeQueueOffsetLoader {
     public void loadProperties() {
         GlobalProperties globalProperties = CommonCache.getGlobalProperties();
         String basePath = globalProperties.getEagleMqHome();
-        if (StringUtil.isNullOrEmpty(basePath)) {
-            throw new IllegalArgumentException("EAGLE_MQ_HOME is invalid!");
-        }
+        Objects.requireNonNull(basePath, "EAGLE_MQ_HOME is invalid!");
         filePath = basePath + BrokerConstants.CONSUME_QUEUE_OFFSET_CONFIG;
         String fileContent = FileContentUtil.readFromFile(filePath);
         ConsumeQueueOffsetModel consumeQueueOffsetModel = JSON.parseObject(fileContent, ConsumeQueueOffsetModel.class);

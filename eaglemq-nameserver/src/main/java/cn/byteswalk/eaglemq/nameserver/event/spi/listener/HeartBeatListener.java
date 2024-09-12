@@ -2,7 +2,6 @@ package cn.byteswalk.eaglemq.nameserver.event.spi.listener;
 
 import cn.byteswalk.eaglemq.nameserver.event.model.HeartBeatEvent;
 
-import java.util.List;
 
 /**
  * @Author: Shaun Hao

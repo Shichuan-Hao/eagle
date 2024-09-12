@@ -6,6 +6,7 @@ package cn.byteswalk.eaglemq.nameserver.event.model;
  * @Description: 心跳事件
  * @Version: 1.0
  */
-public class HeartBeatEvent extends Event{
+public class HeartBeatEvent
+        extends Event {
 }
 

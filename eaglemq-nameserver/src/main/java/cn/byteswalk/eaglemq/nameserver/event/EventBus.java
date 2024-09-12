@@ -3,9 +3,13 @@ package cn.byteswalk.eaglemq.nameserver.event;
 import cn.byteswalk.eaglemq.common.utils.ReflectUtils;
 import cn.byteswalk.eaglemq.nameserver.event.spi.listener.Listener;
 import cn.byteswalk.eaglemq.nameserver.event.model.Event;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -19,6 +23,8 @@ import java.util.concurrent.*;
  * @Version: 1.0
  */
 public class EventBus {
+
+    private final Logger logger = LoggerFactory.getLogger(EventBus.class);
 
     // 使用泛型确保类型安全
 //    private static final Map<Class<? extends Event>, List<Listener<? extends Event>>> eventListenerMap = new ConcurrentHashMap<>();
@@ -37,15 +43,14 @@ public class EventBus {
             });
 
     // 注册事件 event 对应的 listener
-    @SuppressWarnings("unchecked")
     public <E extends Event> void init() {
 //        registry(clazz, listener);
         // SPI 机制，JDK内置的一种提供基于文件管理接口实现的方式
         //spi机制，jdk内置的一种提供基于文件管理接口实现的方式
         ServiceLoader<Listener> serviceLoader = ServiceLoader.load(Listener.class);
         for (Listener<?> listener : serviceLoader) {
-            Class clazz = ReflectUtils.getInterfaceT(listener,0);
-            this.registry(clazz,listener);
+            Class clazz = ReflectUtils.getInterfaceT(listener, 0);
+            this.registry(clazz, listener);
         }
     }
 
@@ -76,7 +81,7 @@ public class EventBus {
                         typedListener.onReceive(event);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.info("publish event error, the error msg:", e);
                 }
             });
         }

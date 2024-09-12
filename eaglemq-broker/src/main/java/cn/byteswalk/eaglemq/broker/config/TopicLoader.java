@@ -11,6 +11,7 @@ import io.netty.util.internal.StringUtil;
 
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static cn.byteswalk.eaglemq.broker.constants.BrokerConstants.COMMITLOG_CONFIG;
@@ -31,9 +32,8 @@ public class TopicLoader {
     public void loadProperties() {
         GlobalProperties globalProperties = CommonCache.getGlobalProperties();
         String basePath = globalProperties.getEagleMqHome();
-        if (StringUtil.isNullOrEmpty(basePath)) {
-            throw new IllegalArgumentException("EAGLE_MQ_HOME is invalid!");
-        }
+
+        Objects.requireNonNull(basePath, "EAGLE_MQ_HOME is invalid!");
 
         filePath = basePath + COMMITLOG_CONFIG;
         String fileContent = FileContentUtil.readFromFile(filePath);

@@ -8,7 +8,8 @@ import cn.byteswalk.eaglemq.nameserver.event.model.RegistryEvent;
  * @Description: RegistryListener
  * @Version: 1.0
  */
-public class RegistryListener implements Listener<RegistryEvent>{
+public class RegistryListener
+        implements Listener<RegistryEvent>{
 
     @Override
     public void onReceive(RegistryEvent event) {

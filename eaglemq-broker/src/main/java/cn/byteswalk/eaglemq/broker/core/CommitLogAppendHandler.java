@@ -32,25 +32,14 @@ public class CommitLogAppendHandler {
      */
     public void appendMsg(String topicName, byte[] content)
             throws IOException {
-        CommitLogMMapFileModel commitLogMMapFileModel = CommonCache.getCommitLogMMapFileModelManager()
-                .get(topicName);
+        CommitLogMMapFileModelManager commitLogMMapFileModelManager = CommonCache.getCommitLogMMapFileModelManager();
+        CommitLogMMapFileModel commitLogMMapFileModel = commitLogMMapFileModelManager.get(topicName);
 
-        checkMMapFileModelIsNull(commitLogMMapFileModel);
+        Objects.requireNonNull(commitLogMMapFileModelManager, "The name of topic is invalid!");
 
         CommitLogMessageModel commitLogMessageModel = new CommitLogMessageModel();
         commitLogMessageModel.setContent(content);
         commitLogMMapFileModel.writeContent(commitLogMessageModel);
     }
-
-    /**
-     * 判断文件内存映射对象是否胃口，如果为空则抛出“Topic is invalid!”异常信息
-     * @param commitLogMMapFileModel 文件内存映射对象
-     */
-    private void checkMMapFileModelIsNull(CommitLogMMapFileModel commitLogMMapFileModel) {
-        if (Objects.isNull(commitLogMMapFileModel)) {
-            throw new RuntimeException("Topic is invalid!");
-        }
-    }
-
 
 }

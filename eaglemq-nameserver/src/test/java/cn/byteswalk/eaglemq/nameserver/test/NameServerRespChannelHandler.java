@@ -1,30 +1,22 @@
 package cn.byteswalk.eaglemq.nameserver.test;
 
 import cn.byteswalk.eaglemq.common.coder.TcpMsg;
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-10 17:11
- * @Description: NameServerRespChannelHandler
- * @Version: 1.0
- */
 @ChannelHandler.Sharable
 public class NameServerRespChannelHandler
-        extends SimpleChannelInboundHandler<Object> {
+        extends SimpleChannelInboundHandler {
 
-
-//    private static final Logger log = LoggerFactory.getLogger(TcpNettyServerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NameServerRespChannelHandler.class);
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
-//        log.info("\33[0;4mAccept msg: {}\33[0;4m", JSON.toJSONString(msg));
-        TcpMsg tcpMsg = (TcpMsg) msg;
-        System.out.println(JSON.toJSONString(tcpMsg));
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
+        TcpMsg tcpMsg = (TcpMsg) o;
+        logger.info("resp:" + JSON.toJSONString(tcpMsg));
     }
-
 }
-

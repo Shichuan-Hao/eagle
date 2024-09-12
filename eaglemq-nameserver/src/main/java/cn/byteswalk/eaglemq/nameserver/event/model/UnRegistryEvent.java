@@ -6,6 +6,7 @@ package cn.byteswalk.eaglemq.nameserver.event.model;
  * @Description: 下线事件
  * @Version: 1.0
  */
-public class UnRegistryEvent extends Event {
+public class UnRegistryEvent
+        extends Event {
 }
 

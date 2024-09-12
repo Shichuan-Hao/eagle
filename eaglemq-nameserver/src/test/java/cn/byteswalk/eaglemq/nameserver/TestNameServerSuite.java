@@ -1,9 +1,9 @@
 package cn.byteswalk.eaglemq.nameserver;
 
+
 import cn.byteswalk.eaglemq.common.coder.TcpMsg;
 import cn.byteswalk.eaglemq.common.coder.TcpMsgDecoder;
 import cn.byteswalk.eaglemq.common.coder.TcpMsgEncoder;
-import cn.byteswalk.eaglemq.common.constants.NameServerConstants;
 import cn.byteswalk.eaglemq.nameserver.test.NameServerRespChannelHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -15,17 +15,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-10 17:13
- * @Description: TestNameServerSuite
- * @Version: 1.0
- */
 public class TestNameServerSuite {
+
+
+    private final Logger logger = LoggerFactory.getLogger(TestNameServerSuite.class);
 
     private EventLoopGroup clientGroup = new NioEventLoopGroup();
     private Bootstrap bootstrap = new Bootstrap();
@@ -38,17 +36,17 @@ public class TestNameServerSuite {
         bootstrap.channel(NioSocketChannel.class);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
-            protected void initChannel(SocketChannel ch) throws Exception {
-                ch.pipeline().addLast(new TcpMsgDecoder());
-                ch.pipeline().addLast(new TcpMsgEncoder());
-                ch.pipeline().addLast(new NameServerRespChannelHandler());
+            protected void initChannel(SocketChannel socketChannel) throws Exception {
+                socketChannel.pipeline().addLast(new TcpMsgDecoder());
+                socketChannel.pipeline().addLast(new TcpMsgEncoder());
+                socketChannel.pipeline().addLast(new NameServerRespChannelHandler());
             }
         });
         ChannelFuture channelFuture = null;
         try {
-            channelFuture = bootstrap.connect(DEFAULT_NAMESERVER_IP, NameServerConstants.DEFAULT_NAMESERVER_PORT).sync();
+            channelFuture = bootstrap.connect(DEFAULT_NAMESERVER_IP, 9090).sync();
             channel = channelFuture.channel();
-            System.out.println("success connected to nameserver!");
+            logger.info("success connected to nameserver!");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -68,6 +66,4 @@ public class TestNameServerSuite {
             }
         }
     }
-
 }
-
