@@ -12,6 +12,9 @@ public abstract class Event {
 
     private long timestamp;
 
+    /**
+     * 主要是系统构建
+     */
     private ChannelHandlerContext channelHandlerContext;
 }
 

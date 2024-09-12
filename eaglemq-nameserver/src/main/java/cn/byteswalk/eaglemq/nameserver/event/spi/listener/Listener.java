@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.nameserver.event.listener;
+package cn.byteswalk.eaglemq.nameserver.event.spi.listener;
 
 import cn.byteswalk.eaglemq.nameserver.event.model.Event;
 
