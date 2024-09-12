@@ -83,6 +83,12 @@ public class EventBus {
     }
 
     public static void main(String[] args) {
+//        ServiceLoader<Listener> serviceLoader = ServiceLoader.load(Listener.class);
+//        for (Listener listener : serviceLoader) {
+//            System.out.println(listener.getClass().getName());
+//        }
+        EventBus eventBus = new EventBus();
+        eventBus.init();
     }
 }
 
