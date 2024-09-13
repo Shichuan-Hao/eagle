@@ -24,19 +24,25 @@ public class UnRegistryListener
         // 认证通过之后，心跳包，将实例保存下来
         ChannelHandlerContext channelHandlerContext = event.getChannelHandlerContext();
         // 如果不为空，代表已经通过认证，这里可以扩展 TODO
-        if (channelHandlerContext.attr(AttributeKey.valueOf("rep-id")).get() == null) {
-            TcpMsg tcpMsg = new TcpMsg(NameServerRespCode.NOT_AUTHENTICATED.getCode(),
-                    NameServerRespCode.NOT_AUTHENTICATED.getDesc().getBytes(StandardCharsets.UTF_8));
+        String reqId = (String) channelHandlerContext.attr(AttributeKey.valueOf("rep-id")).get();
+        if (StringUtil.isNullOrEmpty(reqId)) {
+            TcpMsg tcpMsg = new TcpMsg(NameServerRespCode.ERROR_USER_OR_PASSWORD.getCode(),
+                    NameServerRespCode.ERROR_USER_OR_PASSWORD.getDesc().getBytes(StandardCharsets.UTF_8));
             // 通知调用方
             channelHandlerContext.writeAndFlush(tcpMsg);
             // 关闭 channel，使调用发不要发请求了
             channelHandlerContext.close();
-            throw new IllegalAccessException(NameServerRespCode.NOT_AUTHENTICATED.getDesc());
+            throw new IllegalAccessException(NameServerRespCode.ERROR_USER_OR_PASSWORD.getDesc());
         }
-        String brokerIp = event.getBrokerIp();
-        Integer brokerPort = event.getBrokerPort();
-        if (StringUtil.isNullOrEmpty(brokerIp) && brokerPort != null) {
-            boolean removeStatus = CommonCache.getServiceInstanceManager().remove(brokerIp, brokerPort);
+
+        boolean removeStatus = CommonCache.getServiceInstanceManager().remove(reqId);
+        if (removeStatus) {
+            TcpMsg tcpMsg = new TcpMsg(NameServerRespCode.UNREGISTRY_SERVICE.getCode(),
+                    NameServerRespCode.UNREGISTRY_SERVICE.getDesc().getBytes(StandardCharsets.UTF_8));
+            // 通知调用方
+            channelHandlerContext.writeAndFlush(tcpMsg);
+            // 关闭 channel，使调用发不要发请求了
+            channelHandlerContext.close();
         }
     }
 

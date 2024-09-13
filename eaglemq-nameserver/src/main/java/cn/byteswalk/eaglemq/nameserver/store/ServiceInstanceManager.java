@@ -42,9 +42,12 @@ public class ServiceInstanceManager {
         Objects.requireNonNull(brokerPort, "brokerPort is null");
     }
 
-    public boolean remove(String brokerIp, Integer brokerPort) {
-        String serviceInstanceMapKey = this.buildServiceInstanceMapKey(brokerIp, brokerPort);
-        return serviceInstanceMap.remove(serviceInstanceMapKey) != null;
+    public boolean remove(String key) {
+        return serviceInstanceMap.remove(key) != null;
+    }
+
+    public Map<String, ServiceInstance> getServiceInstanceMap() {
+        return serviceInstanceMap;
     }
 }
 

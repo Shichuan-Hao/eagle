@@ -1,7 +1,7 @@
 package cn.byteswalk.eaglemq.nameserver;
 
 import cn.byteswalk.eaglemq.nameserver.core.NameServerStarter;
-import cn.byteswalk.eaglemq.nameserver.core.PropertiesLoader;
+import cn.byteswalk.eaglemq.nameserver.core.InValidServiceRemoveTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +21,8 @@ public class NameServerStartUp {
 
     public static void main(String[] args) {
         logger.info("{} Starting NameServer", NameServerStartUp.class.getSimpleName());
-        PropertiesLoader propertiesLoader = new PropertiesLoader();
-        propertiesLoader.loadProperties();
-        CommonCache.setPropertiesLoader(propertiesLoader);
+        CommonCache.getPropertiesLoader().loadProperties();
+        new Thread(new InValidServiceRemoveTask()).start();
         nameServerStarter = new NameServerStarter(9090);
         try {
             nameServerStarter.startServer();

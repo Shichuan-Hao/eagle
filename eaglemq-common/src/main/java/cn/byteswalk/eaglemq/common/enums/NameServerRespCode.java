@@ -9,9 +9,7 @@ package cn.byteswalk.eaglemq.common.enums;
 public enum NameServerRespCode {
 
     ERROR_USER_OR_PASSWORD(1001, "账号验证异常"),
-    NOT_AUTHENTICATED(1002, "Not authenticated!"),
-    UN_REGISTRY(2, "下线事件"),
-    HEART_BEAT(3, "心跳事件"),
+    UNREGISTRY_SERVICE(1002, "服务正常下线"),
     ;
 
     final int code;

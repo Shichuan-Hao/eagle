@@ -9,7 +9,8 @@ package cn.byteswalk.eaglemq.nameserver.event.model;
 public class RegistryEvent
         extends Event {
 
-
+    private String brokerIp;
+    private Integer brokerPort;
     private String user;
     private String password;
 
@@ -30,5 +31,20 @@ public class RegistryEvent
         this.password = password;
     }
 
+    public String getBrokerIp() {
+        return brokerIp;
+    }
+
+    public void setBrokerIp(String brokerIp) {
+        this.brokerIp = brokerIp;
+    }
+
+    public Integer getBrokerPort() {
+        return brokerPort;
+    }
+
+    public void setBrokerPort(Integer brokerPort) {
+        this.brokerPort = brokerPort;
+    }
 }
 

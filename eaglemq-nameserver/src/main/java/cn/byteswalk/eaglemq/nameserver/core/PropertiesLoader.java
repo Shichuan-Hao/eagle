@@ -1,13 +1,16 @@
 package cn.byteswalk.eaglemq.nameserver.core;
 
 import cn.byteswalk.eaglemq.common.constants.BrokerConstants;
+import cn.byteswalk.eaglemq.common.constants.NameServerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -26,7 +29,11 @@ public class PropertiesLoader {
         String eagleMqHome = System.getenv(BrokerConstants.EAGLE_MQ_HOME);
         properties = new Properties();
         try {
-            properties.load(Files.newInputStream(new File(eagleMqHome + "/broker/config/nameserver.properties").toPath()));
+            String nameServerPropertyPath = eagleMqHome + NameServerConstants.PROPERTY_PATH;
+            File file = new File(nameServerPropertyPath);
+            Path path = file.toPath();
+            InputStream inputStream = Files.newInputStream(path);
+            properties.load(inputStream);
         } catch (IOException e) {
             logger.error("Failed to load properties file", e);
         }

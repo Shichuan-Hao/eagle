@@ -2,6 +2,7 @@ package cn.byteswalk.eaglemq.nameserver.event.spi.listener;
 
 import cn.byteswalk.eaglemq.common.coder.TcpMsg;
 import cn.byteswalk.eaglemq.common.constants.BrokerConstants;
+import cn.byteswalk.eaglemq.common.constants.NameServerConstants;
 import cn.byteswalk.eaglemq.common.enums.NameServerRespCode;
 import cn.byteswalk.eaglemq.nameserver.CommonCache;
 import cn.byteswalk.eaglemq.nameserver.event.model.RegistryEvent;
@@ -28,7 +29,7 @@ import java.util.UUID;
  * @Version: 1.0
  */
 public class RegistryListener
-        implements Listener<RegistryEvent>{
+        implements Listener<RegistryEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryListener.class);
 
@@ -58,7 +59,8 @@ public class RegistryListener
             throw new IllegalAccessException("error account to connected, user and password do not match, please try again!");
         }
         // 返回一个唯一标识：req-id，代表已经通过安全验证
-        channelHandlerContext.attr(AttributeKey.valueOf("req-id")).set(UUID.randomUUID().toString());
+        String reqId = event.getBrokerIp() + NameServerConstants.SPLIT_REQ_ID + event.getBrokerPort();
+        channelHandlerContext.attr(AttributeKey.valueOf("req-id")).set(reqId);
 
         ServiceInstance serviceInstance = new ServiceInstance();
         serviceInstance.setBrokerIp(event.getBrokerIp());
