@@ -1,5 +1,6 @@
 package cn.byteswalk.eaglemq.nameserver;
 
+import cn.byteswalk.eaglemq.nameserver.commom.CommonCache;
 import cn.byteswalk.eaglemq.nameserver.core.NameServerStarter;
 import cn.byteswalk.eaglemq.nameserver.core.InValidServiceRemoveTask;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.nameserver;
+package cn.byteswalk.eaglemq.nameserver.commom;
 
 import cn.byteswalk.eaglemq.nameserver.core.PropertiesLoader;
 import cn.byteswalk.eaglemq.nameserver.store.ServiceInstanceManager;

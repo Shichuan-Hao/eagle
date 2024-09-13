@@ -63,6 +63,7 @@ public class TcpNettyServerHandler
             default:
                 throw new IllegalArgumentException("unknown code!");
         }
+        eventBus.publish(event);
     }
 }
 

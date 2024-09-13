@@ -1,6 +1,6 @@
 package cn.byteswalk.eaglemq.nameserver.core;
 
-import cn.byteswalk.eaglemq.nameserver.CommonCache;
+import cn.byteswalk.eaglemq.nameserver.commom.CommonCache;
 import cn.byteswalk.eaglemq.nameserver.store.ServiceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

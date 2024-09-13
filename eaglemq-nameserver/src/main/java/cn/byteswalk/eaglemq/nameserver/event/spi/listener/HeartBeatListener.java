@@ -2,7 +2,7 @@ package cn.byteswalk.eaglemq.nameserver.event.spi.listener;
 
 import cn.byteswalk.eaglemq.common.coder.TcpMsg;
 import cn.byteswalk.eaglemq.common.enums.NameServerRespCode;
-import cn.byteswalk.eaglemq.nameserver.CommonCache;
+import cn.byteswalk.eaglemq.nameserver.commom.CommonCache;
 import cn.byteswalk.eaglemq.nameserver.event.model.HeartBeatEvent;
 import cn.byteswalk.eaglemq.nameserver.store.ServiceInstance;
 import io.netty.channel.ChannelHandlerContext;
