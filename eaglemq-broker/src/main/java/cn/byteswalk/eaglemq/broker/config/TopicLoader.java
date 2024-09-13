@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static cn.byteswalk.eaglemq.broker.constants.BrokerConstants.COMMITLOG_CONFIG;
-import static cn.byteswalk.eaglemq.broker.constants.BrokerConstants.DEFAULT_REFRESH_MQ_TOPIC_TIME_STEP;
+import static cn.byteswalk.eaglemq.common.constants.BrokerConstants.COMMITLOG_CONFIG;
+import static cn.byteswalk.eaglemq.common.constants.BrokerConstants.DEFAULT_REFRESH_MQ_TOPIC_TIME_STEP;
 
 /**
  * @Author: Shaun Hao

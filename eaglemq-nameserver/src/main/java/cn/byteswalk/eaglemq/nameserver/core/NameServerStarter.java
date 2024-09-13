@@ -11,6 +11,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @Author: Shaun Hao
@@ -20,7 +22,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class NameServerStarter {
 
-//    private final Logger logger = LoggerFactory.getLogger(NameServerStarter.class);
+    private final Logger logger = LoggerFactory.getLogger(NameServerStarter.class);
 
     private final int port;
 
@@ -29,6 +31,7 @@ public class NameServerStarter {
     }
 
     public void startServer() throws InterruptedException {
+        logger.info("{} Starting NameServer...", NameServerStarter.class.getSimpleName());
         // 构建 netty 服务
         // 注入编解码器
         // 注入特定的handler
@@ -63,11 +66,9 @@ public class NameServerStarter {
         }));
         // 8. 绑定端口
         ChannelFuture channelFuture = bootstrap.bind(port).sync();
-//        logger.info("\33[32;4mstart nameserver application on port: {}\33[0;4m", port);
-        System.out.println("start nameserver application on port: " + port);
+        logger.info("\33[32;4mstart nameserver application on port: {}\33[0;4m", port);
         // 9. 等待服务端监听端口关闭，这里会阻塞主线程
         channelFuture.channel().closeFuture().sync();
-
     }
 }
 

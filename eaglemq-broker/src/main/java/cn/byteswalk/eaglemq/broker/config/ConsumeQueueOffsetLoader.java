@@ -1,6 +1,6 @@
 package cn.byteswalk.eaglemq.broker.config;
 
-import cn.byteswalk.eaglemq.broker.constants.BrokerConstants;
+import cn.byteswalk.eaglemq.common.constants.BrokerConstants;
 import cn.byteswalk.eaglemq.broker.cache.CommonCache;
 import cn.byteswalk.eaglemq.broker.model.ConsumeQueueOffsetModel;
 import cn.byteswalk.eaglemq.broker.utils.FileContentUtil;

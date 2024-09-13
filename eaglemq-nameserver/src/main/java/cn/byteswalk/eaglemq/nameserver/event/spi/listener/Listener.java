@@ -9,5 +9,5 @@ public interface Listener<E extends Event>{
      * 回调通知
      * @param event 事件
      */
-    void onReceive(E event);
+    void onReceive(E event) throws Exception;
 }

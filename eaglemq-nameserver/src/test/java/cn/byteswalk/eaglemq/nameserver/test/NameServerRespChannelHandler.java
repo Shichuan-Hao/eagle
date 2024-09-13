@@ -10,13 +10,12 @@ import org.slf4j.LoggerFactory;
 
 @ChannelHandler.Sharable
 public class NameServerRespChannelHandler
-        extends SimpleChannelInboundHandler {
+        extends SimpleChannelInboundHandler<TcpMsg> {
 
     private final Logger logger = LoggerFactory.getLogger(NameServerRespChannelHandler.class);
 
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
-        TcpMsg tcpMsg = (TcpMsg) o;
-        logger.info("resp:" + JSON.toJSONString(tcpMsg));
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpMsg o) throws Exception {
+        logger.info("resp:{}", JSON.toJSONString(o));
     }
 }

@@ -1,4 +1,4 @@
-package cn.byteswalk.eaglemq.broker.constants;
+package cn.byteswalk.eaglemq.common.constants;
 
 /**
  * Broker 常量类

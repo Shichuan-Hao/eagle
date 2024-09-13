@@ -1,7 +1,7 @@
 package cn.byteswalk.eaglemq.broker.core;
 
 import cn.byteswalk.eaglemq.broker.cache.CommonCache;
-import cn.byteswalk.eaglemq.broker.constants.BrokerConstants;
+import cn.byteswalk.eaglemq.common.constants.BrokerConstants;
 import cn.byteswalk.eaglemq.broker.model.CommitLogMessageModel;
 
 import java.io.IOException;

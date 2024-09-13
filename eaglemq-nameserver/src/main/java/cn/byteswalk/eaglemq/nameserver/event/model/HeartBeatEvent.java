@@ -8,5 +8,6 @@ package cn.byteswalk.eaglemq.nameserver.event.model;
  */
 public class HeartBeatEvent
         extends Event {
+
 }
 

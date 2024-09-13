@@ -1,6 +1,9 @@
 package cn.byteswalk.eaglemq.nameserver;
 
 import cn.byteswalk.eaglemq.nameserver.core.NameServerStarter;
+import cn.byteswalk.eaglemq.nameserver.core.PropertiesLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @Author: Shaun Hao
@@ -10,11 +13,17 @@ import cn.byteswalk.eaglemq.nameserver.core.NameServerStarter;
  */
 public class NameServerStartUp {
 
+    private static Logger logger = LoggerFactory.getLogger(NameServerStartUp.class);
+
     public static final int PORT = 9090;
 
     private static NameServerStarter nameServerStarter;
 
     public static void main(String[] args) {
+        logger.info("{} Starting NameServer", NameServerStartUp.class.getSimpleName());
+        PropertiesLoader propertiesLoader = new PropertiesLoader();
+        propertiesLoader.loadProperties();
+        CommonCache.setPropertiesLoader(propertiesLoader);
         nameServerStarter = new NameServerStarter(9090);
         try {
             nameServerStarter.startServer();
