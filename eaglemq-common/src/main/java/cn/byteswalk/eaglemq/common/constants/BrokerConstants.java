@@ -18,4 +18,10 @@ public class BrokerConstants {
 
 
     public static final String TEST_PATH = "E:/bytewalk/jproject/eaglemq/broker/commitlog/order_cancel_topic/00000000";
+
+    public static final String BROKER_PROPERTIES_PATH = "/broker/config/broker.properties";
+    public static final String NAMESERVER_IP = "nameserver.ip";
+    public static final String NAMESERVER_PORT = "nameserver.port";
+    public static final String NAMESERVER_USER = "nameserver.user";
+    public static final String NAMESERVER_PASSWORD = "nameserver.password";
 }

@@ -5,6 +5,7 @@ import cn.byteswalk.eaglemq.broker.model.ConsumeQueueOffsetModel;
 import cn.byteswalk.eaglemq.broker.model.TopicModel;
 import cn.byteswalk.eaglemq.broker.core.CommitLogMMapFileModelManager;
 import cn.byteswalk.eaglemq.broker.core.ConsumeQueueMMapFileModelManager;
+import cn.byteswalk.eaglemq.broker.netty.nameserver.NameServerClient;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class CommonCache {
     private static ConsumeQueueOffsetModel consumeQueueOffsetModel = new ConsumeQueueOffsetModel();
     private static ConsumeQueueMMapFileModelManager consumeQueueMMapFileModelManager = new ConsumeQueueMMapFileModelManager();
     private static CommitLogMMapFileModelManager commitLogMMapFileModelManager = new CommitLogMMapFileModelManager();
-
+    private static NameServerClient nameServerClient = new NameServerClient();
 
     public static GlobalProperties getGlobalProperties() {
         return globalProperties;
@@ -69,5 +70,13 @@ public class CommonCache {
 
     public static void setCommitLogMMapFileModelManager(CommitLogMMapFileModelManager commitLogMMapFileModelManager) {
         CommonCache.commitLogMMapFileModelManager = commitLogMMapFileModelManager;
+    }
+
+    public static NameServerClient getNameServerClient() {
+        return nameServerClient;
+    }
+
+    public static void setNameServerClient(NameServerClient nameServerClient) {
+        CommonCache.nameServerClient = nameServerClient;
     }
 }
