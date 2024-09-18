@@ -59,6 +59,10 @@ public class RegistryListener
         serviceInstance.setBrokerPort(event.getBrokerPort());
         serviceInstance.setFirstRegistryTime(System.currentTimeMillis());
         CommonCache.getServiceInstanceManager().put(serviceInstance);
+        // 注册事件的响应
+        TcpMsg tcpMsg = new TcpMsg(NameServerRespCode.REGISTRY_SUCCESS.getCode(),
+                NameServerRespCode.REGISTRY_SUCCESS.getDesc().getBytes(StandardCharsets.UTF_8));
+        channelHandlerContext.writeAndFlush(tcpMsg);
     }
 
 }

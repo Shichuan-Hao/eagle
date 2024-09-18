@@ -41,13 +41,17 @@ public class GlobalPropertiesLoader {
             File file = new File(brokerPropertiesPath);
             FileInputStream fileInputStream = new FileInputStream(file);
             properties.load(fileInputStream);
+
             String nameserverIp         = properties.getProperty(BrokerConstants.NAMESERVER_IP);
             String nameserverPortStr    = properties.getProperty(BrokerConstants.NAMESERVER_PORT);
             String nameserverUser       = properties.getProperty(BrokerConstants.NAMESERVER_USER);
             String nameserverPassword   = properties.getProperty(BrokerConstants.NAMESERVER_PASSWORD);
+            String brokerPortStr        = properties.getProperty(BrokerConstants.BROKER_PORT);
+
             globalProperties.setNameserverIp(nameserverIp);
             globalProperties.setNameserverPort(Integer.parseInt(nameserverPortStr));
             globalProperties.setNameserverUser(nameserverUser);
+            globalProperties.setBrokerPort(Integer.parseInt(brokerPortStr));
             globalProperties.setNameserverIp(properties.getProperty(nameserverPassword));
         } catch (IOException e) {
             throw new RuntimeException(e);

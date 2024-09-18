@@ -5,6 +5,7 @@ import cn.byteswalk.eaglemq.broker.model.ConsumeQueueOffsetModel;
 import cn.byteswalk.eaglemq.broker.model.TopicModel;
 import cn.byteswalk.eaglemq.broker.core.CommitLogMMapFileModelManager;
 import cn.byteswalk.eaglemq.broker.core.ConsumeQueueMMapFileModelManager;
+import cn.byteswalk.eaglemq.broker.netty.nameserver.HeartBeatTaskManager;
 import cn.byteswalk.eaglemq.broker.netty.nameserver.NameServerClient;
 import com.google.common.collect.Lists;
 
@@ -25,6 +26,7 @@ public class CommonCache {
     private static ConsumeQueueMMapFileModelManager consumeQueueMMapFileModelManager = new ConsumeQueueMMapFileModelManager();
     private static CommitLogMMapFileModelManager commitLogMMapFileModelManager = new CommitLogMMapFileModelManager();
     private static NameServerClient nameServerClient = new NameServerClient();
+    private static HeartBeatTaskManager heartBeatTaskManager = new HeartBeatTaskManager();
 
     public static GlobalProperties getGlobalProperties() {
         return globalProperties;
@@ -78,5 +80,13 @@ public class CommonCache {
 
     public static void setNameServerClient(NameServerClient nameServerClient) {
         CommonCache.nameServerClient = nameServerClient;
+    }
+
+    public static HeartBeatTaskManager getHeartBeatTaskManager() {
+        return heartBeatTaskManager;
+    }
+
+    public static void setHeartBeatTaskManager(HeartBeatTaskManager heartBeatTaskManager) {
+        CommonCache.heartBeatTaskManager = heartBeatTaskManager;
     }
 }

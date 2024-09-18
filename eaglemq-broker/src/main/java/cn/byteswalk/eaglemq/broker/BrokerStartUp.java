@@ -63,6 +63,7 @@ public class BrokerStartUp {
      */
     private static void initNameServerChannel() {
        CommonCache.getNameServerClient().initConnection();
+       CommonCache.getNameServerClient().sendRegistry();
     }
 
     public static void main(String[] args)

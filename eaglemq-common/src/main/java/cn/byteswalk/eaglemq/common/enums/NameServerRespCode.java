@@ -10,6 +10,7 @@ public enum NameServerRespCode {
 
     ERROR_USER_OR_PASSWORD(1001, "账号验证异常"),
     UNREGISTRY_SERVICE(1002, "服务正常下线"),
+    REGISTRY_SUCCESS(1003, "注册成功"),
     ;
 
     final int code;

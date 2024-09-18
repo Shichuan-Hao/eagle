@@ -22,6 +22,7 @@ public class BrokerConstants {
     public static final String BROKER_PROPERTIES_PATH = "/broker/config/broker.properties";
     public static final String NAMESERVER_IP = "nameserver.ip";
     public static final String NAMESERVER_PORT = "nameserver.port";
+    public static final String BROKER_PORT = "broker.port";
     public static final String NAMESERVER_USER = "nameserver.user";
     public static final String NAMESERVER_PASSWORD = "nameserver.password";
 }
