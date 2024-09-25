@@ -60,6 +60,7 @@ public class NameServerClient {
         });
         ChannelFuture channelFuture = null;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            // 下线处理
             TcpMsg tcpMsg = new TcpMsg(NameServerEventCode.UN_REGISTRY.getCode(), new byte[0]);
             channel.writeAndFlush(tcpMsg);
             clientGroup.shutdownGracefully();
@@ -91,24 +92,24 @@ public class NameServerClient {
      * 发送注册事件通知
      */
     public void sendRegistry() {
-       String brokerIp = null;
+        RegistryDTO registryDTO = this.buildRegistryDTO();
+        byte[] body = JSON.toJSONBytes(registryDTO);
+        channel.writeAndFlush(body);
+        logger.info("发送注册事件");
+    }
+
+    private RegistryDTO buildRegistryDTO() {
+        String brokerIp = null;
         try {
             brokerIp = Inet4Address.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
 
-        RegistryDTO registryDTO = this.buildRegistryDTO(brokerIp);
-        byte[] body = JSON.toJSONBytes(registryDTO);
-        channel.writeAndFlush(body);
-        logger.info("发送注册事件");
-    }
-
-    private RegistryDTO buildRegistryDTO(String brokerIp) {
-        GlobalProperties globalProperties = CommonCache.getGlobalProperties();
-        Integer brokerPort = globalProperties.getBrokerPort();
-        String nameserverUser = globalProperties.getNameserverUser();
-        String nameserverPassword = globalProperties.getNameserverPassword();
+        GlobalProperties globalProperties   = CommonCache.getGlobalProperties();
+        Integer brokerPort                  = globalProperties.getBrokerPort();
+        String nameserverUser               = globalProperties.getNameserverUser();
+        String nameserverPassword           = globalProperties.getNameserverPassword();
 
         RegistryDTO registryDTO = new RegistryDTO();
         registryDTO.setBrokerIp(brokerIp);

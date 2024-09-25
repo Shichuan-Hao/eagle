@@ -25,7 +25,7 @@ public class NameServerRespChannelHandler extends SimpleChannelInboundHandler<Tc
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, TcpMsg tcpMsg)
             throws Exception {
-        logger.info("resp: {}", JSON.toJSONString(tcpMsg));
+        logger.info("Broker registration nameserver response results: {}", JSON.toJSONString(tcpMsg));
         // 注册成功
         if (NameServerRespCode.REGISTRY_SUCCESS.getCode() == tcpMsg.getCode()) {
             // 开启一个定时任务，上报心跳数据给到nameserver，需要做幂等

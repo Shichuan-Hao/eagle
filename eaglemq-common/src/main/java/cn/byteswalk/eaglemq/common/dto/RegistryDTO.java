@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class RegistryDTO
         implements Serializable {
 
+
+
     private String brokerIp;
     private Integer brokerPort;
     private String user;

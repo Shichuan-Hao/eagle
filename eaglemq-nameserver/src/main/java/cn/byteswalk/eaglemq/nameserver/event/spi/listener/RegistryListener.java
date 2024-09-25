@@ -58,6 +58,7 @@ public class RegistryListener
         serviceInstance.setBrokerIp(event.getBrokerIp());
         serviceInstance.setBrokerPort(event.getBrokerPort());
         serviceInstance.setFirstRegistryTime(System.currentTimeMillis());
+        // 放入内存之中
         CommonCache.getServiceInstanceManager().put(serviceInstance);
         // 注册事件的响应
         TcpMsg tcpMsg = new TcpMsg(NameServerRespCode.REGISTRY_SUCCESS.getCode(),
