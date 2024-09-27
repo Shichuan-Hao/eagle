@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * @Author: Shaun Hao
  * @CreateTime: 2024-09-05 16:15
- * @Description: Tcp Netty 处理器a
+ * @Description: Tcp Netty 处理器，主要接收Netty的网络请求，而后解析
  * @Version: 1.0
  */
 @ChannelHandler.Sharable
@@ -59,11 +59,13 @@ public class TcpNettyServerHandler
                 event = JSON.parseObject(body, UnRegistryEvent.class);
                 break;
             case HEART_BEAT:
-                event = JSON.parseObject(body, HeartBeatEvent.class);
+//                event = JSON.parseObject(body, HeartBeatEvent.class);
+                event = new HeartBeatEvent();
                 break;
             default:
                 throw new IllegalArgumentException("unknown code!");
         }
+        event.setChannelHandlerContext(ctx);
 
         eventBus.publish(event);
     }

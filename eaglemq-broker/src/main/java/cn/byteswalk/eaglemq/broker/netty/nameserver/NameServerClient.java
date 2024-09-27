@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
-import java.util.Objects;
 
 /**
  * @Author: Shaun Hao
@@ -61,8 +60,8 @@ public class NameServerClient {
         ChannelFuture channelFuture = null;
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             // 下线处理
-            TcpMsg tcpMsg = new TcpMsg(NameServerEventCode.UN_REGISTRY.getCode(), new byte[0]);
-            channel.writeAndFlush(tcpMsg);
+//            TcpMsg tcpMsg = new TcpMsg(NameServerEventCode.UN_REGISTRY.getCode(), new byte[0]);
+//            channel.writeAndFlush(tcpMsg);
             clientGroup.shutdownGracefully();
             logger.info("nameserver client is closed");
         }));
@@ -94,7 +93,9 @@ public class NameServerClient {
     public void sendRegistry() {
         RegistryDTO registryDTO = this.buildRegistryDTO();
         byte[] body = JSON.toJSONBytes(registryDTO);
-        channel.writeAndFlush(body);
+        // 发送 TcpMsg
+        TcpMsg tcpMsg = new TcpMsg(NameServerEventCode.REGISTRY.getCode(), body);
+        channel.writeAndFlush(tcpMsg);
         logger.info("发送注册事件");
     }
 

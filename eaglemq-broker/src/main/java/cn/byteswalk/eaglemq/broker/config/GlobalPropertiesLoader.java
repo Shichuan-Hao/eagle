@@ -51,8 +51,8 @@ public class GlobalPropertiesLoader {
             globalProperties.setNameserverIp(nameserverIp);
             globalProperties.setNameserverPort(Integer.parseInt(nameserverPortStr));
             globalProperties.setNameserverUser(nameserverUser);
+            globalProperties.setNameserverPassword(nameserverPassword);
             globalProperties.setBrokerPort(Integer.parseInt(brokerPortStr));
-            globalProperties.setNameserverIp(properties.getProperty(nameserverPassword));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

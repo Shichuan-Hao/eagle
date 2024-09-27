@@ -18,10 +18,10 @@ public class HeartBeatTaskManager {
 
     private AtomicInteger flag = new AtomicInteger(0);
 
-    // 开启心跳传输任务
+    // 开启心跳传输任务，幂等处理
     public void startTask() {
         // 大于1代表已经触发过任务，可以保证有且只有一个心跳线程
-        if (flag.getAndIncrement() > 1) {
+        if (flag.getAndIncrement() >= 1) {
             return;
         }
         Thread heartBeatRequestTask = new Thread(new HeartBeatTask());
