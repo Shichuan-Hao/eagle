@@ -1,55 +1,27 @@
 package cn.byteswalk.eaglemq.nameserver.store;
 
-import com.google.common.collect.Maps;
-import org.slf4j.LoggerFactory;
-
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-13 10:39
- * @Description: 服务实例
- * @Version: 1.0
+ * @Author idea
+ * @Date: Created in 17:36 2024/5/4
+ * @Description 服务实例
  */
 public class ServiceInstance {
 
     private String brokerIp;
     private Integer brokerPort;
-    /**
-     * 首次注册时间
-     */
     private Long firstRegistryTime;
-    /**
-     * 上一次的心跳时间
-     */
     private Long lastHeartBeatTime;
-    /**
-     * 元数据信息，各种各样的扩展属性
-     */
-    private Map<String, String> attributes = Maps.newHashMap();
+    private Map<String,String> attrs = new HashMap<>();
 
-    public Map<String, String> getAttributes() {
-        return attributes;
+    public String getBrokerIp() {
+        return brokerIp;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
-
-    public Long getLastHeartBeatTime() {
-        return lastHeartBeatTime;
-    }
-
-    public void setLastHeartBeatTime(Long lastHeartBeatTime) {
-        this.lastHeartBeatTime = lastHeartBeatTime;
-    }
-
-    public Long getFirstRegistryTime() {
-        return firstRegistryTime;
-    }
-
-    public void setFirstRegistryTime(Long firstRegistryTime) {
-        this.firstRegistryTime = firstRegistryTime;
+    public void setBrokerIp(String brokerIp) {
+        this.brokerIp = brokerIp;
     }
 
     public Integer getBrokerPort() {
@@ -60,13 +32,27 @@ public class ServiceInstance {
         this.brokerPort = brokerPort;
     }
 
-    public String getBrokerIp() {
-        return brokerIp;
+    public Long getFirstRegistryTime() {
+        return firstRegistryTime;
     }
 
-    public void setBrokerIp(String brokerIp) {
-        this.brokerIp = brokerIp;
+    public void setFirstRegistryTime(Long firstRegistryTime) {
+        this.firstRegistryTime = firstRegistryTime;
     }
 
+    public Long getLastHeartBeatTime() {
+        return lastHeartBeatTime;
+    }
+
+    public void setLastHeartBeatTime(Long lastHeartBeatTime) {
+        this.lastHeartBeatTime = lastHeartBeatTime;
+    }
+
+    public Map<String, String> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, String> attrs) {
+        this.attrs = attrs;
+    }
 }
-

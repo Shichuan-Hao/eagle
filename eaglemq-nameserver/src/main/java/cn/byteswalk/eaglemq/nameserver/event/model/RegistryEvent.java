@@ -1,19 +1,18 @@
 package cn.byteswalk.eaglemq.nameserver.event.model;
 
-/**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-12 15:40
- * @Description: 注册事件（首次注册到注册中心使用）
- * @Version: 1.0
- */
-public class RegistryEvent
-        extends Event {
+import com.alibaba.fastjson.JSON;
 
-    private String brokerIp;
-    private Integer brokerPort;
+/**
+ * @Author idea
+ * @Date: Created in 14:19 2024/5/4
+ * @Description 注册事件（首次链接nameserver使用）
+ */
+public class RegistryEvent extends Event{
+
     private String user;
     private String password;
-
+    private String brokerIp;
+    private Integer brokerPort;
 
     public String getUser() {
         return user;
@@ -46,5 +45,9 @@ public class RegistryEvent
     public void setBrokerPort(Integer brokerPort) {
         this.brokerPort = brokerPort;
     }
-}
 
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
+}

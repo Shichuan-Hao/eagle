@@ -1,1 +1,0 @@
-package cn.byteswalk.eaglemq.nameserver;

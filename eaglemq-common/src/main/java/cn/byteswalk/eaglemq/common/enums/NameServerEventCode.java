@@ -8,9 +8,9 @@ package cn.byteswalk.eaglemq.common.enums;
  */
 public enum NameServerEventCode {
 
-    REGISTRY(1, "注册事件"),
-    UN_REGISTRY(2, "下线事件"),
-    HEART_BEAT(3, "心跳事件"),
+    REGISTRY(1,"注册事件"),
+    UN_REGISTRY(2,"下线事件"),
+    HEART_BEAT(3,"心跳事件"),
     ;
 
     final int code;
@@ -28,16 +28,4 @@ public enum NameServerEventCode {
     public String getDesc() {
         return desc;
     }
-
-    // fromCode 方法
-    public static NameServerEventCode fromCode(int code) {
-        for (NameServerEventCode eventCode : NameServerEventCode.values()) {
-            if (eventCode.getCode() == code) {
-                return eventCode;
-            }
-        }
-        throw new IllegalArgumentException("Unknown code: " + code);
-    }
-
 }
-

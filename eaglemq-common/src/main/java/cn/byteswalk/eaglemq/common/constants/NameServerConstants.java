@@ -9,10 +9,4 @@ package cn.byteswalk.eaglemq.common.constants;
 public class NameServerConstants {
 
     public static final Integer DEFAULT_NAMESERVER_PORT = 9090;
-
-    public static final String PROPERTY_PATH = "/broker/config/nameserver.properties";
-
-    public static final String SPLIT_REQ_ID = ":";
-
 }
-

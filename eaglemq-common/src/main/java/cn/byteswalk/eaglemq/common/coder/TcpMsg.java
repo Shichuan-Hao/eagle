@@ -1,5 +1,7 @@
 package cn.byteswalk.eaglemq.common.coder;
 
+import cn.byteswalk.eaglemq.common.constants.BrokerConstants;
+
 /**
  * @Author: Shaun Hao
  * @CreateTime: 2024-09-05 13:43
@@ -7,38 +9,28 @@ package cn.byteswalk.eaglemq.common.coder;
  * @Version: 1.0
  */
 public class TcpMsg {
-
     /**
-     * 魔数 4个字节
-     * 安全校验参数
-     * 当使用 Netty 解析到对象时校验该属性的值是否与预期一样，如果一样才会解析下闻的步骤
+     * 魔数
      */
     private short magic;
-
     /**
-     * 请求包的绝体含义 4个字节
-     * 根据 code 的值判断消息结构体是什么样的解析格式
+     * 表示请求包的具体含义
      */
     private int code;
-
     /**
-     * 代表整个消息体，即字节数组 body 的整体长度 4个字节
-     * <p>
-     * 将这个字节数组 `byte[] body` 长度 len 加载到本地内存并转换成 byte 数组之后，就可以根据 code 值得出消息体要解析成什么样的一个
-     * Java 对象，而后将这个 Java 对象转换成 JSON 格式
+     * 消息长度
      */
     private int len;
-
     /**
-     * 消息体
+     * 消息内容
      */
     private byte[] body;
 
-    public TcpMsg() {}
-
     public TcpMsg(int code, byte[] body) {
+        this.magic = BrokerConstants.DEFAULT_MAGIC_NUM;
         this.code = code;
         this.body = body;
+        this.len = body.length;
     }
 
     public short getMagic() {
@@ -73,4 +65,3 @@ public class TcpMsg {
         this.body = body;
     }
 }
-

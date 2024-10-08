@@ -1,13 +1,16 @@
 package cn.byteswalk.eaglemq.nameserver.event.model;
 
+import com.alibaba.fastjson.JSON;
+
 /**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-12 15:41
- * @Description: 心跳事件
- * @Version: 1.0
+ * @Author idea
+ * @Date: Created in 14:19 2024/5/4
+ * @Description 心跳事件
  */
-public class HeartBeatEvent
-        extends Event {
+public class HeartBeatEvent extends Event {
 
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
+    }
 }
-

@@ -1,53 +1,38 @@
 package cn.byteswalk.eaglemq.nameserver.store;
 
-import com.google.common.collect.Maps;
-
 import java.util.Map;
-import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-13 10:44
- * @Description: ServiceInstanceManager
- * @Version: 1.0
+ * @Author idea
+ * @Date: Created in 17:37 2024/5/4
+ * @Description
  */
 public class ServiceInstanceManager {
 
-    private final Map<String, ServiceInstance> serviceInstanceMap = Maps.newConcurrentMap();
+    private Map<String, ServiceInstance> serviceInstanceMap = new ConcurrentHashMap<>();
 
     public void putIfExist(ServiceInstance serviceInstance) {
-        String serviceInstanceMapKey = this.buildServiceInstanceMapKey(serviceInstance.getBrokerIp(), serviceInstance.getBrokerPort());
-        ServiceInstance currentInstance = serviceInstanceMap.get(serviceInstanceMapKey);
+        ServiceInstance currentInstance = this.get(serviceInstance.getBrokerIp(), serviceInstance.getBrokerPort());
         if (currentInstance != null && currentInstance.getFirstRegistryTime() != null) {
             serviceInstance.setFirstRegistryTime(currentInstance.getFirstRegistryTime());
         }
-        serviceInstanceMap.put(serviceInstanceMapKey, serviceInstance);
+        serviceInstanceMap.put(serviceInstance.getBrokerIp() + ":" + serviceInstance.getBrokerPort(), serviceInstance);
     }
 
     public void put(ServiceInstance serviceInstance) {
-        this.checkParams(serviceInstance);
-        String serviceInstanceMapKey = this.buildServiceInstanceMapKey(serviceInstance.getBrokerIp(),
-                serviceInstance.getBrokerPort());
-        serviceInstanceMap.put(serviceInstanceMapKey, serviceInstance);
+        serviceInstanceMap.put(serviceInstance.getBrokerIp() + ":" + serviceInstance.getBrokerPort(), serviceInstance);
     }
 
-    private String buildServiceInstanceMapKey(String serviceIp, int servicePort) {
-        return serviceIp + ":" + servicePort;
+    public ServiceInstance get(String brokerIp, Integer brokerPort) {
+        return serviceInstanceMap.get(brokerIp + ":" + brokerPort);
     }
 
-    private void checkParams(ServiceInstance serviceInstance) {
-        String brokerIp = serviceInstance.getBrokerIp();
-        Integer brokerPort = serviceInstance.getBrokerPort();
-        Objects.requireNonNull(brokerIp, "brokerIp is null");
-        Objects.requireNonNull(brokerPort, "brokerPort is null");
-    }
-
-    public boolean remove(String key) {
-        return serviceInstanceMap.remove(key) != null;
+    public ServiceInstance remove(String key) {
+        return serviceInstanceMap.remove(key);
     }
 
     public Map<String, ServiceInstance> getServiceInstanceMap() {
         return serviceInstanceMap;
     }
 }
-

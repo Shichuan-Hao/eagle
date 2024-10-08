@@ -3,27 +3,22 @@ package cn.byteswalk.eaglemq.nameserver.event.model;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-12 11:33
- * @Description: 事件总类
- * @Version: 1.0
+ * @Author idea
+ * @Date: Created in 14:16 2024/5/4
+ * @Description
  */
 public abstract class Event {
 
-    private long timestamp;
-
-    /**
-     * 主要是系统构建
-     */
+    private long timeStamp;
+    //?
     private ChannelHandlerContext channelHandlerContext;
 
-
-    public long getTimestamp() {
-        return timestamp;
+    public long getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public ChannelHandlerContext getChannelHandlerContext() {
@@ -35,4 +30,3 @@ public abstract class Event {
     }
 
 }
-

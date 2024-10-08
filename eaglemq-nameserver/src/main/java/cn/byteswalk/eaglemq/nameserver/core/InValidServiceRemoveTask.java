@@ -1,9 +1,7 @@
 package cn.byteswalk.eaglemq.nameserver.core;
 
-import cn.byteswalk.eaglemq.nameserver.commom.CommonCache;
+import cn.byteswalk.eaglemq.nameserver.common.CommonCache;
 import cn.byteswalk.eaglemq.nameserver.store.ServiceInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -15,15 +13,14 @@ import java.util.concurrent.TimeUnit;
  * @Description: 移除非正常服务任务
  * @Version: 1.0
  */
-public class InValidServiceRemoveTask implements Runnable {
+public class InValidServiceRemoveTask
+        implements Runnable{
 
-    private final Logger logger = LoggerFactory.getLogger(InValidServiceRemoveTask.class);
 
     @Override
     public void run() {
         while (true) {
             try {
-                // 先休眠三秒
                 TimeUnit.SECONDS.sleep(3);
                 Map<String, ServiceInstance> serviceInstanceMap = CommonCache.getServiceInstanceManager().getServiceInstanceMap();
                 long currentTime = System.currentTimeMillis();
@@ -34,7 +31,6 @@ public class InValidServiceRemoveTask implements Runnable {
                     if (serviceInstance.getLastHeartBeatTime() == null) {
                         continue;
                     }
-                    // 超过9秒，移除异常的节点
                     if(currentTime - serviceInstance.getLastHeartBeatTime() > 3000 * 3) {
                         iterator.remove();
                     }
@@ -44,6 +40,4 @@ public class InValidServiceRemoveTask implements Runnable {
             }
         }
     }
-
 }
-

@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
  */
 public class ReflectUtils {
 
+
     /**
      * 获取接口上的泛型T
      *
@@ -39,4 +40,3 @@ public class ReflectUtils {
     }
 
 }
-

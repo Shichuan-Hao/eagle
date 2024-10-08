@@ -11,12 +11,12 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @Version: 1.0
  */
 public class TcpMsgEncoder
-        extends MessageToByteEncoder<Object> {
+        extends MessageToByteEncoder {
 
 
     @Override
-    protected void encode(
-            ChannelHandlerContext channelHandlerContext, Object msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext channelHandlerContext, Object msg, ByteBuf out)
+            throws Exception {
         TcpMsg tcpMsg = (TcpMsg) msg;
         out.writeShort(tcpMsg.getMagic());
         out.writeInt(tcpMsg.getCode());
@@ -24,4 +24,3 @@ public class TcpMsgEncoder
         out.writeBytes(tcpMsg.getBody());
     }
 }
-

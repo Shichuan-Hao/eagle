@@ -8,16 +8,29 @@ import java.io.Serializable;
  * @Description: RegistryDTO
  * @Version: 1.0
  */
-public class RegistryDTO
-        implements Serializable {
+public class RegistryDTO implements Serializable {
 
-
-
-    private String brokerIp;
-    private Integer brokerPort;
     private String user;
     private String password;
+    private String brokerIp;
+    private Integer brokerPort;
+    private Long timeStamp;
 
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getBrokerIp() {
         return brokerIp;
@@ -35,20 +48,11 @@ public class RegistryDTO
         this.brokerPort = brokerPort;
     }
 
-    public String getUser() {
-        return user;
+    public Long getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setTimeStamp(Long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }
-

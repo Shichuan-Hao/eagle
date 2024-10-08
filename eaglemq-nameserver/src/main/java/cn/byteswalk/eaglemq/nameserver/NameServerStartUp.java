@@ -1,36 +1,26 @@
 package cn.byteswalk.eaglemq.nameserver;
 
-import cn.byteswalk.eaglemq.nameserver.commom.CommonCache;
-import cn.byteswalk.eaglemq.nameserver.core.NameServerStarter;
+import cn.byteswalk.eaglemq.nameserver.common.CommonCache;
 import cn.byteswalk.eaglemq.nameserver.core.InValidServiceRemoveTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import cn.byteswalk.eaglemq.nameserver.core.NameServerStarter;
+
+import java.io.IOException;
 
 /**
- * @Author: Shaun Hao
- * @CreateTime: 2024-09-05 13:04
- * @Description: 注册中心启动类
- * @Version: 1.0
+ * @Author idea
+ * @Date: Created in 15:59 2024/5/2
+ * @Description 注册中心启动类
  */
 public class NameServerStartUp {
 
-    private static Logger logger = LoggerFactory.getLogger(NameServerStartUp.class);
-
-    public static final int PORT = 9090;
-
     private static NameServerStarter nameServerStarter;
 
-    public static void main(String[] args) {
-        logger.info("{} Starting NameServer", NameServerStartUp.class.getSimpleName());
+    public static void main(String[] args) throws InterruptedException, IOException {
         CommonCache.getPropertiesLoader().loadProperties();
+
         new Thread(new InValidServiceRemoveTask()).start();
+
         nameServerStarter = new NameServerStarter(9090);
-        try {
-            nameServerStarter.startServer();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        nameServerStarter.startServer();
     }
-
 }
-
