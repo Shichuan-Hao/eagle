@@ -13,7 +13,7 @@ import cn.byteswalk.eaglemq.common.enums.NameServerResponseCode;
  * @description nameserver通道
  */
 @ChannelHandler.Sharable
-public class NameServerRespChannelHandler extends SimpleChannelInboundHandler {
+public class NameServerRespChannelHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {

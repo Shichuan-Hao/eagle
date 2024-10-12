@@ -11,7 +11,7 @@ public enum NameServerEventCode {
     REGISTRY(1,"注册事件"),
     UN_REGISTRY(2,"下线事件"),
     HEART_BEAT(3,"心跳事件"),
-    ;
+    START_REPLICATION(4, "开启复制");
 
     final int code;
     final String desc;

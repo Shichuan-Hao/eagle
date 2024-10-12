@@ -41,6 +41,7 @@ public class BrokerStartUp {
         eagleMqTopicLoader.startRefreshEagleMqTopicInfoTask();
         consumeQueueOffsetLoader.loadProperties();
         consumeQueueOffsetLoader.startRefreshConsumeQueueOffsetTask();
+
         for (EagleMqTopicModel eagleMqTopicModel : CommonCache.getEagleMqTopicModelMap().values()) {
             String topicName = eagleMqTopicModel.getTopic();
             commitLogAppendHandler.prepareMMapLoading(topicName);
