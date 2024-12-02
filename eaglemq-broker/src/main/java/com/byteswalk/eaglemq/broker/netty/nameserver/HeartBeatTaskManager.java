@@ -32,7 +32,7 @@ public class HeartBeatTaskManager {
     }
 
 
-    private class HeartBeatRequestTask implements Runnable{
+    private class HeartBeatRequestTask implements Runnable {
         @Override
         public void run() {
             while (true) {
@@ -41,7 +41,7 @@ public class HeartBeatTaskManager {
                     logger.info("向注册中心发送心跳事件");
                     //心跳包不需要额外透传过多的参数，只需要告诉nameserver这个channel依然存活即可
                     Channel channel = CommonCache.getNameServerClient().getChannel();
-                    TcpMsg tcpMsg = new TcpMsg(NameServerEventCode.HEART_BEAT.getCode(),new byte[]{});
+                    TcpMsg tcpMsg = new TcpMsg(NameServerEventCode.HEART_BEAT.getCode(), new byte[]{});
                     channel.writeAndFlush(tcpMsg);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
