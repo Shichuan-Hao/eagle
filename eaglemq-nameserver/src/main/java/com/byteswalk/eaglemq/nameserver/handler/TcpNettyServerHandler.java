@@ -53,7 +53,7 @@ public class TcpNettyServerHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        //如果依赖任务剔除节点，会有三个心跳周期的延迟，做到链接断开立马剔除的效果
+        // 如果依赖任务剔除节点，会有三个心跳周期的延迟，做到链接断开立马剔除的效果
         UnRegistryEvent unRegistryEvent = new UnRegistryEvent();
         unRegistryEvent.setChannelHandlerContext(ctx);
         eventBus.publish(unRegistryEvent);
